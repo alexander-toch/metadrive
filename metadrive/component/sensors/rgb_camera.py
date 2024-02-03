@@ -56,9 +56,13 @@ class RGBCamera(BaseCamera):
             vertex=post_vert_str,
             fragment=post_frag_str,
         )
-        self.tonemap_quad.set_shader(tonemap_shader)
-        self.tonemap_quad.set_shader_input('tex', self.scene_tex)
-        self.tonemap_quad.set_shader_input('exposure', 1.0)
+
+        if self.tonemap_quad is not None:
+            self.tonemap_quad.set_shader(tonemap_shader)
+            self.tonemap_quad.set_shader_input('tex', self.scene_tex)
+            self.tonemap_quad.set_shader_input('exposure', 1.0)
+
+        
 
     def _create_buffer(self, width, height, frame_buffer_property):
         """
