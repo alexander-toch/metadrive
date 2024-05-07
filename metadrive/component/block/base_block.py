@@ -85,10 +85,6 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             # self.side_normal.set_format(Texture.F_srgb)
             self.side_normal.setWrapU(Texture.WM_repeat)
             self.side_normal.setWrapV(Texture.WM_repeat)
-
-            self.sidewalk = self.loader.loadModel(AssetLoader.file_path("models", "box.bam"))
-            self.sidewalk.setTwoSided(False)
-            self.sidewalk.setTexture(self.side_texture)
             
             self.dirty_road_patch_texture = self.loader.loadTexture(AssetLoader.file_path("drp", "test_patch.png"))            
 
@@ -230,13 +226,6 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self.dirty_road_patch_node_path = NodePath(RigidBodyCombiner(self.name + "_dirty_road_patch"))
 
         self.lane_node_path = NodePath(RigidBodyCombiner(self.name + "_lane"))
-        self.lane_vis_node_path = NodePath(RigidBodyCombiner(self.name + "_lane_vis"))
-
-        self.sidewalk_node_path.setTag("type", Semantics.SIDEWALK.label)
-        self.crosswalk_node_path.setTag("type", Semantics.CROSSWALK.label)
-        self.dirty_road_patch_node_path.setTag("type", Semantics.DIRTY_ROAD_PATCH.label)
-        self.lane_vis_node_path.setTag("type", Semantics.ROAD.label)
-        self.lane_line_node_path.setTag("type", Semantics.LANE_LINE.label)
 
         if skip:  # for debug
             pass
