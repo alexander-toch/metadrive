@@ -259,6 +259,7 @@ class PGBlock(BaseBlock):
                     self._construct_lane_line_in_block(lane, choose_side)
         self._construct_sidewalk()
         self._construct_crosswalk()
+        self._construct_dirty_road_patches()
 
     def _construct_broken_line(self, lane, lateral, line_color, line_type):
         """
@@ -333,6 +334,46 @@ class PGBlock(BaseBlock):
             "height": sidewalk_height
         }
 
+    def _generate_dirty_road_patch_from_line(self, lane, lateral_direction=1):
+        """
+        Construct the dirty road patches for this lane
+        Args:
+            block:
+
+        Returns:
+
+        """
+        if str(lane.index) in self.dirty_road_patches:
+            logger.warning("Dirty road patch id {} already exists!".format(str(lane.index)))
+            return
+        polygon = []
+        longs = np.arange(
+            0, lane.length + PGDrivableAreaProperty.SIDEWALK_LENGTH, PGDrivableAreaProperty.SIDEWALK_LENGTH
+        )
+        start_lat = -lane.width_at(0) / 2 + 0.2
+        side_lat = start_lat + PGDrivableAreaProperty.SIDEWALK_WIDTH
+        assert lateral_direction == -1 or lateral_direction == 1
+        start_lat *= lateral_direction
+        side_lat *= lateral_direction
+        if lane.radius != 0 and side_lat > lane.radius:
+            logger.warning(
+                "The sidewalk width ({}) is too large."
+                " It should be < radius ({})".format(side_lat, lane.radius)
+            )
+            return
+        for k, lateral in enumerate([start_lat, side_lat]):
+            if k == 1:
+                longs = longs[::-1]
+            for longitude in longs:
+                longitude = min(lane.length + 0.1, longitude)
+                point = lane.position(longitude, lateral)
+                polygon.append([point[0], point[1]])
+                
+        self.dirty_road_patches[str(lane.index)] = {
+            "type": MetaDriveType.DIRTY_ROAD_PATCH,
+            "polygon": polygon,
+        }
+
     def _construct_lane_line_in_block(self, lane, construct_left_right=(True, True)):
         """
         Construct lane line in the Panda3d world for getting contact information
@@ -348,6 +389,7 @@ class PGBlock(BaseBlock):
             elif line_type == PGLineType.SIDE:
                 self._construct_continuous_line(lane, lateral, line_color, line_type)
                 self._generate_sidewalk_from_line(lane)
+                self._generate_dirty_road_patch_from_line(lane)
             elif line_type == PGLineType.GUARDRAIL:
                 self._construct_continuous_line(lane, lateral, line_color, line_type)
                 self._generate_sidewalk_from_line(

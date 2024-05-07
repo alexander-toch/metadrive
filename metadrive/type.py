@@ -38,6 +38,7 @@ class MetaDriveType:
     BOUNDARY_SIDEWALK = "ROAD_EDGE_SIDEWALK"  # polygon
     STOP_SIGN = "STOP_SIGN"
     CROSSWALK = "CROSSWALK"
+    DIRTY_ROAD_PATCH = "DIRTY_ROAD_PATCH"
     SPEED_BUMP = "SPEED_BUMP"
     DRIVEWAY = "DRIVEWAY"
     GUARDRAIL = "GUARDRAIL"  # A thickened sidewalk that doesn't allow object to penetrate.
@@ -172,6 +173,10 @@ class MetaDriveType:
     @classmethod
     def is_crosswalk(cls, type):
         return type == MetaDriveType.CROSSWALK
+    
+    @classmethod
+    def is_dirty_road_patch(cls, type):
+        return type == MetaDriveType.DIRTY_ROAD_PATCH
 
     @classmethod
     def is_vehicle(cls, type):

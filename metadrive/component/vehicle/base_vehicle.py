@@ -57,6 +57,7 @@ class BaseVehicleState:
         self.on_white_continuous_line = False
         self.on_broken_line = False
         self.on_crosswalk = False
+        self.on_dirty_road_patch = False
 
         # contact results, a set containing objects type name for rendering
         self.contact_results = set()
@@ -739,6 +740,8 @@ class BaseVehicle(BaseObject, BaseVehicleState):
                 self.on_yellow_continuous_line = True
             elif name == MetaDriveType.CROSSWALK:
                 self.on_crosswalk = True
+            elif name == MetaDriveType.DIRTY_ROAD_PATCH:
+                self.on_dirty_road_patch = True
             elif name == MetaDriveType.LINE_BROKEN_SINGLE_YELLOW or name == MetaDriveType.LINE_BROKEN_SINGLE_WHITE:
                 self.on_broken_line = True
             elif name == MetaDriveType.TRAFFIC_LIGHT:

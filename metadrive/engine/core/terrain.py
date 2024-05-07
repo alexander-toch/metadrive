@@ -273,6 +273,10 @@ class Terrain(BaseObject, ABC):
 
             # crosswalk
             self._mesh_terrain.set_shader_input("crosswalk_tex", self.crosswalk_tex)
+
+            # dirty road patch
+            self._mesh_terrain.set_shader_input("drp_tex", self.drp_tex)
+
             self._terrain_shader_set = True
 
             # semantic color input
@@ -524,6 +528,11 @@ class Terrain(BaseObject, ABC):
         self.crosswalk_tex.setRamImage(tex)
         # self.crosswalk_tex.write("test_crosswalk.png")
 
+        # dirty road patch test
+        self.drp_tex = self.loader.loadTexture(AssetLoader.file_path("drp", "test_patch.png"))
+        self.drp_tex.set_wrap_u(Texture.WMRepeat)
+        self.drp_tex.set_wrap_v(Texture.WMRepeat)
+
     def _make_random_terrain(self, texture_size, terrain_size, heightfield):
         """
         Deprecated
@@ -596,6 +605,9 @@ class Terrain(BaseObject, ABC):
         layer = ["lane", "lane_line"]
         if self.engine.global_config["show_crosswalk"]:
             layer.append("crosswalk")
+
+        layer.append("dirty_road_patch")
+
         if self.engine.current_map:
             semantics = self.engine.current_map.get_semantic_map(
                 center_point,

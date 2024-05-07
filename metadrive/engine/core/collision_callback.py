@@ -17,7 +17,7 @@ def collision_callback(contact):
     for i in range(2):
         if nodes[i].hasPythonTag(MetaDriveType.VEHICLE):
             obj_type = another_node_name = another_nodes[i].getName()
-            if obj_type in [MetaDriveType.BOUNDARY_SIDEWALK, MetaDriveType.CROSSWALK] \
+            if obj_type in [MetaDriveType.BOUNDARY_SIDEWALK, MetaDriveType.CROSSWALK, MetaDriveType.DIRTY_ROAD_PATCH] \
                     or MetaDriveType.is_road_line(obj_type):
                 continue
             # print(obj_type)

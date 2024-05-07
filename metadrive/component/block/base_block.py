@@ -71,6 +71,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         # polygons representing crosswalk and sidewalk
         self.crosswalks = {}
         self.sidewalks = {}
+        self.dirty_road_patches = {}
 
         if self.render:
             # side
@@ -84,6 +85,13 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             # self.side_normal.set_format(Texture.F_srgb)
             self.side_normal.setWrapU(Texture.WM_repeat)
             self.side_normal.setWrapV(Texture.WM_repeat)
+
+            self.sidewalk = self.loader.loadModel(AssetLoader.file_path("models", "box.bam"))
+            self.sidewalk.setTwoSided(False)
+            self.sidewalk.setTexture(self.side_texture)
+
+            self.dirty_road_patch_texture = self.loader.loadTexture(AssetLoader.file_path("drp", "test_patch.png"))            
+
             self.line_seg = make_polygon_model([(-0.5, 0.5), (-0.5, -0.5), (0.5, -0.5), (0.5, 0.5)], 0)
 
     def _sample_topology(self) -> bool:
@@ -172,6 +180,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self._block_objects = None
         self.sidewalks = {}
         self.crosswalks = {}
+        self.dirty_road_patches = {}
 
     def construct_from_config(self, config: Dict, root_render_np: NodePath, physics_world: PhysicsWorld):
         success = self.construct_block(root_render_np, physics_world, config)
@@ -218,7 +227,16 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self.lane_line_node_path = NodePath(RigidBodyCombiner(self.name + "_lane_line"))
         self.sidewalk_node_path = NodePath(RigidBodyCombiner(self.name + "_sidewalk"))
         self.crosswalk_node_path = NodePath(RigidBodyCombiner(self.name + "_crosswalk"))
+        self.dirty_road_patch_node_path = NodePath(RigidBodyCombiner(self.name + "_dirty_road_patch"))
+
         self.lane_node_path = NodePath(RigidBodyCombiner(self.name + "_lane"))
+        self.lane_vis_node_path = NodePath(RigidBodyCombiner(self.name + "_lane_vis"))
+
+        self.sidewalk_node_path.setTag("type", Semantics.SIDEWALK.label)
+        self.crosswalk_node_path.setTag("type", Semantics.CROSSWALK.label)
+        self.dirty_road_patch_node_path.setTag("type", Semantics.DIRTY_ROAD_PATCH.label)
+        self.lane_vis_node_path.setTag("type", Semantics.ROAD.label)
+        self.lane_line_node_path.setTag("type", Semantics.LANE_LINE.label)
 
         if skip:  # for debug
             pass
@@ -247,6 +265,10 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self.crosswalk_node_path.hide(CamMask.AllOn)
         self.crosswalk_node_path.show(CamMask.SemanticCam)
 
+        self.dirty_road_patch_node_path.flattenStrong()
+        self.dirty_road_patch_node_path.node().collect()
+        self.sidewalk_node_path.hide(CamMask.ScreenshotCam | CamMask.Shadow)
+
         # only bodies reparent to this node
         self.lane_node_path.flattenStrong()
         self.lane_node_path.node().collect()
@@ -255,6 +277,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
 
         self.sidewalk_node_path.reparentTo(self.origin)
         self.crosswalk_node_path.reparentTo(self.origin)
+        self.dirty_road_patch_node_path.reparentTo(self.origin)
         self.lane_line_node_path.reparentTo(self.origin)
         self.lane_node_path.reparentTo(self.origin)
 
@@ -270,6 +293,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
 
         self._node_path_list.append(self.sidewalk_node_path)
         self._node_path_list.append(self.crosswalk_node_path)
+        self._node_path_list.append(self.dirty_road_patch_node_path)
         self._node_path_list.append(self.lane_line_node_path)
         self._node_path_list.append(self.lane_node_path)
 
@@ -348,6 +372,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self._respawn_roads.clear()
         self.crosswalks = {}
         self.sidewalks = {}
+        self.dirty_road_patches = {}
         self._global_network = None
         super(BaseBlock, self).destroy()
 
@@ -394,6 +419,42 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                     body_node.addShape(shape)
                     self.dynamic_nodes.append(body_node)
                     body_node.setIntoCollideMask(CollisionGroup.Sidewalk)
+                    self._node_path_list.append(np)
+
+    def _construct_dirty_road_patches(self):
+        """
+        Construct the dirty road patches
+        """
+        if self.engine is None or not self.engine.use_render_pipeline:
+            for drp_id, drp in self.dirty_road_patches.items():
+                if len(drp["polygon"]) == 0:
+                    continue
+                polygons = TerrainProperty.clip_polygon(drp["polygon"])
+                if polygons is None:
+                    continue
+                for polygon in polygons:
+                    np = make_polygon_model(polygon, 0.0)
+                    np.reparentTo(self.dirty_road_patch_node_path)
+                    np.setPos(0, 0, 0.005)
+                    if self.render:
+                        np.setTexture(self.dirty_road_patch_texture)
+                    # np.setTexture(self.ts_normal, self.side_normal)
+
+                    body_node = BaseRigidBodyNode(None, MetaDriveType.DIRTY_ROAD_PATCH)
+                    body_node.setKinematic(False)
+                    body_node.setStatic(True)
+                    body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
+                    body_np.setPos(0, 0, 0.0005)
+                    self._node_path_list.append(body_np)
+
+                    geom = np.node().getGeom(0)
+                    mesh = BulletTriangleMesh()
+                    mesh.addGeom(geom)
+                    shape = BulletTriangleMeshShape(mesh, dynamic=False)
+
+                    body_node.addShape(shape)
+                    self.dynamic_nodes.append(body_node)
+                    body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
                     self._node_path_list.append(np)
 
     def _construct_crosswalk(self):

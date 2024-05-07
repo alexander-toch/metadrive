@@ -137,6 +137,7 @@ class CollisionGroup(Mask):
     LidarBroadDetector = BitMask32.bit(9)
     TrafficParticipants = BitMask32.bit(10)
     Crosswalk = BitMask32.bit(11)
+    DirtyRoadPatch = BitMask32.bit(12)
 
     @classmethod
     def collision_rules(cls):
@@ -390,6 +391,7 @@ class Semantics:
     # customized
     LANE_LINE = label_color("LANE_LINE", (255, 255, 255))
     CROSSWALK = label_color("CROSSWALK", (55, 176, 189))
+    DIRTY_ROAD_PATCH = label_color("DIRTY_ROAD_PATCH", (55, 176, 189))
 
 
 class MapTerrainSemanticColor:
@@ -430,6 +432,8 @@ class MapTerrainSemanticColor:
             # so people can save the angle (degree) of the crosswalk in attribute map
             # the value * 10 = angle of crosswalk. It is a trick for saving memory.
             return 0.4  # this value can be overwritten latter
+        elif MetaDriveType.DIRTY_ROAD_PATCH:
+            return 0.8
         else:
             raise ValueError("Unsupported type: {}".format(type))
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

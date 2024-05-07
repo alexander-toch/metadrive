@@ -23,7 +23,7 @@ from metadrive.component.map.pg_map import MapGenerateMethod
 # W, H = 1928, 1208
 W, H = 1280, 720  # TU Simple size
 
-SAVE_IMAGES = True
+SAVE_IMAGES = False
 
 
 class CopyRamRGBCamera(RGBCamera):
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     # Adapted from OpenPilot's bridge
 
     map_config = {
-        "config": "SSCrSCS",
+        "config": "SXCrSCS",
         BaseMap.GENERATE_TYPE: MapGenerateMethod.BIG_BLOCK_SEQUENCE,
         # BaseMap.GENERATE_CONFIG: 3,
         BaseMap.LANE_WIDTH: 3.5,
@@ -83,6 +83,7 @@ if __name__ == "__main__":
         on_continuous_line_done=False,
         crash_vehicle_done=False,
         crash_object_done=False,
+        show_crosswalk=True,
         traffic_density=0.0,  # traffic is incredibly expensive
         # map_config=create_map(),
         map_config=map_config,

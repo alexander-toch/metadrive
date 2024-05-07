@@ -38,6 +38,11 @@ class ScenarioBlock(BaseBlock):
                     ScenarioDescription.TYPE: MetaDriveType.CROSSWALK,
                     ScenarioDescription.POLYGON: np.asarray(data[ScenarioDescription.POLYGON])[..., :2]
                 }
+            elif MetaDriveType.is_dirty_road_patch(data["type"]):
+                self.dirty_road_patches[object_id] = {
+                    ScenarioDescription.TYPE: MetaDriveType.D,
+                    ScenarioDescription.POLYGON: data[ScenarioDescription.POLYGON]
+                }
             else:
                 pass
         return True
@@ -77,6 +82,7 @@ class ScenarioBlock(BaseBlock):
                 self._construct_continuous_line(points, color=PGLineColor.GREY)
         self._construct_sidewalk()
         self._construct_crosswalk()
+        self._construct_dirty_road_patches()
 
     def _construct_continuous_line(self, points, color):
         for index in range(0, len(points) - 1):
