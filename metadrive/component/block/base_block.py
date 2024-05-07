@@ -412,37 +412,36 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
     def _construct_dirty_road_patches(self):
         """
         Construct the dirty road patches
-        """
-        if self.engine is None or not self.engine.use_render_pipeline:
-            for drp_id, drp in self.dirty_road_patches.items():
-                if len(drp["polygon"]) == 0:
-                    continue
-                polygons = TerrainProperty.clip_polygon(drp["polygon"])
-                if polygons is None:
-                    continue
-                for polygon in polygons:
-                    height = 0.05
-                    z_pos = height / 2
-                    np = make_polygon_model(polygon, height)
-                    np.reparentTo(self.dirty_road_patch_node_path)
-                    np.setPos(0, 0, z_pos)
+        """       
+        for drp_id, drp in self.dirty_road_patches.items():
+            if len(drp["polygon"]) == 0:
+                continue
+            polygons = TerrainProperty.clip_polygon(drp["polygon"])
+            if polygons is None:
+                continue
+            for polygon in polygons:
+                height = 0.05
+                z_pos = height / 2
+                np = make_polygon_model(polygon, height)
+                np.reparentTo(self.dirty_road_patch_node_path)
+                np.setPos(0, 0, z_pos)
 
-                    body_node = BaseRigidBodyNode(None, MetaDriveType.DIRTY_ROAD_PATCH)
-                    body_node.setKinematic(False)
-                    body_node.setStatic(True)
-                    body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
-                    body_np.setPos(0, 0, z_pos)
-                    self._node_path_list.append(body_np)
+                body_node = BaseRigidBodyNode(None, MetaDriveType.DIRTY_ROAD_PATCH)
+                body_node.setKinematic(False)
+                body_node.setStatic(True)
+                body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
+                body_np.setPos(0, 0, z_pos)
+                self._node_path_list.append(body_np)
 
-                    geom = np.node().getGeom(0)
-                    mesh = BulletTriangleMesh()
-                    mesh.addGeom(geom)
-                    shape = BulletTriangleMeshShape(mesh, dynamic=False)
+                geom = np.node().getGeom(0)
+                mesh = BulletTriangleMesh()
+                mesh.addGeom(geom)
+                shape = BulletTriangleMeshShape(mesh, dynamic=False)
 
-                    body_node.addShape(shape)
-                    self.dynamic_nodes.append(body_node)
-                    body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
-                    self._node_path_list.append(np)
+                body_node.addShape(shape)
+                self.dynamic_nodes.append(body_node)
+                body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
+                self._node_path_list.append(np)
 
     def _construct_crosswalk(self):
         """

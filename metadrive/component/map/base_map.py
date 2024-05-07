@@ -53,8 +53,8 @@ class BaseMap(BaseRunnable, ABC):
         # map features
         self.road_network = self.road_network_type()
         self.crosswalks = {}
-        self.dirty_road_patches = {}
         self.sidewalks = {}
+        self.dirty_road_patches = {}
 
         # A flatten representation of blocks, might cause chaos in city-level generation.
         self.blocks = []
@@ -278,6 +278,7 @@ class BaseMap(BaseRunnable, ABC):
 
         if "dirty_road_patch" in layer:
             for id, drp in self.dirty_road_patches.items():
+                print("dirty_road_patch fillPoly")
                 polygon = drp["polygon"]
                 points = [
                     [
@@ -285,7 +286,6 @@ class BaseMap(BaseRunnable, ABC):
                         int((y - center_p[1]) * pixels_per_meter) + size / 2
                     ] for x, y in polygon
                 ]
-                print("fillPoly")
                 cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=MapTerrainSemanticColor.get_color(MetaDriveType.CROSSWALK))
         #     self._semantic_map = mask
         # return self._semantic_map
@@ -327,6 +327,8 @@ class BaseMap(BaseRunnable, ABC):
 
         for sidewalk in self.sidewalks.values():
             polygons.append(sidewalk["polygon"])
+
+        # TODO: also needed for dirty road patch?
 
         for polygon in polygons:
             points = [
