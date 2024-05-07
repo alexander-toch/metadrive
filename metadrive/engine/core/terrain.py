@@ -287,7 +287,8 @@ class Terrain(BaseObject, ABC):
                 crosswalk_semantics=to_float(Semantics.CROSSWALK.color),
                 lane_line_semantics=to_float(Semantics.LANE_LINE.color),
                 road_semantics=to_float(Semantics.ROAD.color),
-                ground_semantics=to_float(Semantics.TERRAIN.color)
+                ground_semantics=to_float(Semantics.TERRAIN.color),
+                dirty_road_patch_semantics=to_float(Semantics.DIRTY_ROAD_PATCH.color),
             )
         self._mesh_terrain.set_shader_input("attribute_tex", attribute_tex)
 

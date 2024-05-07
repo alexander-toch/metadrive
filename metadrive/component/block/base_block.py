@@ -89,7 +89,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             self.sidewalk = self.loader.loadModel(AssetLoader.file_path("models", "box.bam"))
             self.sidewalk.setTwoSided(False)
             self.sidewalk.setTexture(self.side_texture)
-
+            
             self.dirty_road_patch_texture = self.loader.loadTexture(AssetLoader.file_path("drp", "test_patch.png"))            
 
             self.line_seg = make_polygon_model([(-0.5, 0.5), (-0.5, -0.5), (0.5, -0.5), (0.5, 0.5)], 0)
@@ -432,18 +432,17 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 if polygons is None:
                     continue
                 for polygon in polygons:
-                    np = make_polygon_model(polygon, 0.0)
+                    height = 0.05
+                    z_pos = height / 2
+                    np = make_polygon_model(polygon, height)
                     np.reparentTo(self.dirty_road_patch_node_path)
-                    np.setPos(0, 0, 0.005)
-                    if self.render:
-                        np.setTexture(self.dirty_road_patch_texture)
-                    # np.setTexture(self.ts_normal, self.side_normal)
+                    np.setPos(0, 0, z_pos)
 
                     body_node = BaseRigidBodyNode(None, MetaDriveType.DIRTY_ROAD_PATCH)
                     body_node.setKinematic(False)
                     body_node.setStatic(True)
                     body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
-                    body_np.setPos(0, 0, 0.0005)
+                    body_np.setPos(0, 0, z_pos)
                     self._node_path_list.append(body_np)
 
                     geom = np.node().getGeom(0)

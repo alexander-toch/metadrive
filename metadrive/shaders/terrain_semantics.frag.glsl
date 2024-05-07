@@ -36,6 +36,7 @@ uniform vec3 crosswalk_semantics;
 uniform vec3 lane_line_semantics;
 uniform vec3 road_semantics;
 uniform vec3 ground_semantics;
+uniform vec3 dirty_road_patch_semantics;
 
 uniform sampler2D attribute_tex;
 
@@ -88,6 +89,9 @@ void main() {
             float theta=(value-0.39999) * 1000/180 * 3.1415926535;
             vec2 new_terrain_uv = vec2(cos(theta)*terrain_uv.x - sin(theta)*terrain_uv.y, sin(theta)*terrain_uv.x+cos(theta)*terrain_uv.y);
             diffuse = crosswalk_semantics;
+        } else if (value > 0.79 && value < 0.81) {
+            // MetaDriveType.DIRTY_ROAD_PATCH
+            diffuse = dirty_road_patch_semantics;
         } else {
             // Semantics for value 4
             diffuse = road_semantics;

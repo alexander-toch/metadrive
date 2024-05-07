@@ -82,14 +82,17 @@ class EngineCore(ShowBase.ShowBase):
     global_config = None  # global config can exist before engine initialization
     loadPrcFileData("", "window-title {}".format(EDITION))
     loadPrcFileData("", "framebuffer-multisample 1")
-    loadPrcFileData("", "multisamples 4")
+    loadPrcFileData("", "multisamples 8")
     loadPrcFileData("", "bullet-filter-algorithm groups-mask")
     loadPrcFileData("", "audio-library-name null")
     loadPrcFileData("", "model-cache-compressed-textures 1")
     loadPrcFileData("", "textures-power-2 none")
 
-    loadPrcFileData("", "basic-shaders-only #t")
-    loadPrcFileData("", "notify-level-glgsg debug")
+    # TODO: detect OSX. for now: uncomment for OSX
+    # loadPrcFileData("", "basic-shaders-only #t")
+    # loadPrcFileData("", "notify-level-glgsg debug")
+    # loadPrcFileData("", "multisamples 4")
+    # loadPrcFileData("", "gl-version 3 2")
 
 
     # loadPrcFileData("", "transform-cache 0")
@@ -107,7 +110,6 @@ class EngineCore(ShowBase.ShowBase):
     # loadPrcFileData("", "sync-video 1")
 
     # for debug use
-    loadPrcFileData("", "gl-version 3 2")
 
     def __init__(self, global_config):
         # if EngineCore.global_config is not None:

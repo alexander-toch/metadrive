@@ -148,7 +148,7 @@ void main() {
         diffuse = texture(crosswalk_tex, new_terrain_uv * road_tex_ratio).rgb;
     } else if (value > 0.7999 && value < 0.81) {
         // dirty road patch        
-        diffuse = texture(drp_tex, terrain_uv * road_tex_ratio).rgb;    
+        diffuse = texture(drp_tex, terrain_uv * road_tex_ratio).rgb;
     } else{
         // Semantics for value 4
         diffuse = texture(white_tex, terrain_uv * road_tex_ratio).rgb;

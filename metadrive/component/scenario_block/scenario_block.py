@@ -40,8 +40,8 @@ class ScenarioBlock(BaseBlock):
                 }
             elif MetaDriveType.is_dirty_road_patch(data["type"]):
                 self.dirty_road_patches[object_id] = {
-                    ScenarioDescription.TYPE: MetaDriveType.D,
-                    ScenarioDescription.POLYGON: data[ScenarioDescription.POLYGON]
+                    ScenarioDescription.TYPE: MetaDriveType.DIRTY_ROAD_PATCH,
+                    ScenarioDescription.POLYGON: np.asarray(data[ScenarioDescription.POLYGON])[..., :2]
                 }
             else:
                 pass

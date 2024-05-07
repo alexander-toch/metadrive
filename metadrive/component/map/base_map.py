@@ -253,50 +253,40 @@ class BaseMap(BaseRunnable, ABC):
             thickness = min(thickness, 2)  # clip
             cv2.polylines(mask, np.array([points]).astype(np.int32), False, color, thickness)
 
-            if "dirty_road_patch" in layer:
-                for id, drp in self.dirty_road_patches.items():
-                    polygon = drp["polygon"]
-                    points = [
-                        [
-                            int((x - center_p[0]) * pixels_per_meter + size / 2),
-                            int((y - center_p[1]) * pixels_per_meter) + size / 2
-                        ] for x, y in polygon
-                    ]
-                    # edges = find_longest_parallel_edges(polygon)
-                    # p_1, p_2 = edges[0]
-                    p_1, p_2 = find_longest_edge(polygon)[0]
-                    dir = (
-                        p_2[0] - p_1[0],
-                        p_2[1] - p_1[1],
-                    )
-                    # 0-2pi
-                    angle = np.arctan2(*dir) / np.pi * 180 + 180
-                    # normalize to 0.4-0.714
-                    angle = angle / 1000 + MapTerrainSemanticColor.get_color(MetaDriveType.DIRTY_ROAD_PATCH)
-                    cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=angle)
+        if "crosswalk" in layer:
+            for id, sidewalk in self.crosswalks.items():
+                polygon = sidewalk["polygon"]
+                points = [
+                    [
+                        int((x - center_p[0]) * pixels_per_meter + size / 2),
+                        int((y - center_p[1]) * pixels_per_meter) + size / 2
+                    ] for x, y in polygon
+                ]
+                # edges = find_longest_parallel_edges(polygon)
+                # p_1, p_2 = edges[0]
+                p_1, p_2 = find_longest_edge(polygon)[0]
+                dir = (
+                    p_2[0] - p_1[0],
+                    p_2[1] - p_1[1],
+                )
+                # 0-2pi
+                angle = np.arctan2(*dir) / np.pi * 180 + 180
+                # normalize to 0.4-0.714
+                angle = angle / 1000 + MapTerrainSemanticColor.get_color(MetaDriveType.CROSSWALK)
+                cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=angle)
 
-            if "crosswalk" in layer:
-                for id, sidewalk in self.crosswalks.items():
-                    polygon = sidewalk["polygon"]
-                    points = [
-                        [
-                            int((x - center_p[0]) * pixels_per_meter + size / 2),
-                            int((y - center_p[1]) * pixels_per_meter) + size / 2
-                        ] for x, y in polygon
-                    ]
-                    # edges = find_longest_parallel_edges(polygon)
-                    # p_1, p_2 = edges[0]
-                    p_1, p_2 = find_longest_edge(polygon)[0]
-                    dir = (
-                        p_2[0] - p_1[0],
-                        p_2[1] - p_1[1],
-                    )
-                    # 0-2pi
-                    angle = np.arctan2(*dir) / np.pi * 180 + 180
-                    # normalize to 0.4-0.714
-                    angle = angle / 1000 + MapTerrainSemanticColor.get_color(MetaDriveType.CROSSWALK)
-                    cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=angle)
 
+        if "dirty_road_patch" in layer:
+            for id, drp in self.dirty_road_patches.items():
+                polygon = drp["polygon"]
+                points = [
+                    [
+                        int((x - center_p[0]) * pixels_per_meter + size / 2),
+                        int((y - center_p[1]) * pixels_per_meter) + size / 2
+                    ] for x, y in polygon
+                ]
+                print("fillPoly")
+                cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=MapTerrainSemanticColor.get_color(MetaDriveType.CROSSWALK))
         #     self._semantic_map = mask
         # return self._semantic_map
         return mask
