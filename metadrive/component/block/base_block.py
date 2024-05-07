@@ -267,7 +267,6 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
 
         self.dirty_road_patch_node_path.flattenStrong()
         self.dirty_road_patch_node_path.node().collect()
-        self.sidewalk_node_path.hide(CamMask.ScreenshotCam | CamMask.Shadow)
 
         # only bodies reparent to this node
         self.lane_node_path.flattenStrong()

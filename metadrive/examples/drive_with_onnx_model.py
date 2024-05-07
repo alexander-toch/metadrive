@@ -120,7 +120,7 @@ if __name__ == "__main__":
             env.render(
                 text={
                     "Auto-Drive (Switch mode: T)": (
-                        "on" if env.current_track_vehicle.expert_takeover else "off"
+                        "on" if env.agent.expert_takeover else "off"
                     ),
                     "Keyboard Control": "W,A,S,D",
                 }
@@ -145,6 +145,6 @@ if __name__ == "__main__":
 
             if (tm or tc) and info["arrive_dest"]:
                 env.reset(env.current_seed + 1)
-                env.current_track_vehicle.expert_takeover = True
+                env.agent.expert_takeover = True
     finally:
         env.close()

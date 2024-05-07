@@ -284,9 +284,11 @@ class Pipeline:
             vertex=post_vert_str,
             fragment=post_frag_str,
         )
-        self.tonemap_quad.set_shader(tonemap_shader)
-        self.tonemap_quad.set_shader_input('tex', scene_tex)
-        self.tonemap_quad.set_shader_input('exposure', self.exposure)
+
+        if self.tonemap_quad is not None:
+            self.tonemap_quad.set_shader(tonemap_shader)
+            self.tonemap_quad.set_shader_input('tex', scene_tex)
+            self.tonemap_quad.set_shader_input('exposure', self.exposure)
 
     def get_all_casters(self):
         """
