@@ -391,7 +391,7 @@ class Semantics:
     # customized
     LANE_LINE = label_color("LANE_LINE", (255, 255, 255))
     CROSSWALK = label_color("CROSSWALK", (55, 176, 189))
-    DIRTY_ROAD_PATCH = label_color("DIRTY_ROAD_PATCH", (55, 176, 189))
+    DIRTY_ROAD_PATCH = label_color("DIRTY_ROAD_PATCH", (255, 255, 255))
 
 
 class MapTerrainSemanticColor:

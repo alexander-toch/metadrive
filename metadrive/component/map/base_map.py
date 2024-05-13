@@ -276,17 +276,18 @@ class BaseMap(BaseRunnable, ABC):
                 cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=angle)
 
 
-        if "dirty_road_patch" in layer:
-            for id, dirty_road_patch in self.dirty_road_patches.items():
-                print("dirty_road_patch fillPoly")
-                polygon = dirty_road_patch["polygon"]
-                points = [
-                    [
-                        int((x - center_p[0]) * pixels_per_meter + size / 2),
-                        int((y - center_p[1]) * pixels_per_meter) + size / 2
-                    ] for x, y in polygon
-                ]
-                cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=MapTerrainSemanticColor.get_color(MetaDriveType.CROSSWALK))
+        # if "dirty_road_patch" in layer:
+        #     logger.info("dirty_road_patch in layer")
+        #     for id, dirty_road_patch in self.dirty_road_patches.items():
+        #         print("dirty_road_patch fillPoly")
+        #         polygon = dirty_road_patch["polygon"]
+        #         points = [
+        #             [
+        #                 int((x - center_p[0]) * pixels_per_meter + size / 2),
+        #                 int((y - center_p[1]) * pixels_per_meter) + size / 2
+        #             ] for x, y in polygon
+        #         ]
+        #         cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=MapTerrainSemanticColor.get_color(MetaDriveType.CROSSWALK))
         #     self._semantic_map = mask
         # return self._semantic_map
         return mask

@@ -347,11 +347,11 @@ class PGBlock(BaseBlock):
             logger.warning("Dirty road patch id {} already exists!".format(str(lane.index)))
             return
         polygon = []
-        longs = np.arange(
-            0, lane.length + PGDrivableAreaProperty.SIDEWALK_LENGTH, PGDrivableAreaProperty.SIDEWALK_LENGTH
-        )
+        DIRTY_ROAD_PATCH_LENGTH = 5
+        DIRTY_ROAD_PATCH_WIDTH = 3
+        longs = np.array([0, DIRTY_ROAD_PATCH_LENGTH])
         start_lat = -lane.width_at(0) / 2 + 0.2
-        side_lat = start_lat + PGDrivableAreaProperty.SIDEWALK_WIDTH
+        side_lat = start_lat + DIRTY_ROAD_PATCH_WIDTH
         assert lateral_direction == -1 or lateral_direction == 1
         start_lat *= lateral_direction
         side_lat *= lateral_direction
