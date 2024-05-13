@@ -277,9 +277,9 @@ class BaseMap(BaseRunnable, ABC):
 
 
         if "dirty_road_patch" in layer:
-            for id, drp in self.dirty_road_patches.items():
+            for id, dirty_road_patch in self.dirty_road_patches.items():
                 print("dirty_road_patch fillPoly")
-                polygon = drp["polygon"]
+                polygon = dirty_road_patch["polygon"]
                 points = [
                     [
                         int((x - center_p[0]) * pixels_per_meter + size / 2),

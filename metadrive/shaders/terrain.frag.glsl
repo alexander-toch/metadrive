@@ -38,7 +38,7 @@ uniform sampler2D road_tex;
 uniform sampler2D road_normal;
 uniform sampler2D road_rough;
 uniform sampler2D crosswalk_tex;
-uniform sampler2D drp_tex;
+uniform sampler2D dirty_road_patch_tex;
 
 uniform sampler2D grass_tex;
 uniform sampler2D grass_normal;
@@ -148,7 +148,7 @@ void main() {
         diffuse = texture(crosswalk_tex, new_terrain_uv * road_tex_ratio).rgb;
     } else if (value > 0.7999 && value < 0.81) {
         // dirty road patch        
-        diffuse = texture(drp_tex, terrain_uv * road_tex_ratio).rgb;
+        diffuse = texture(dirty_road_patch_tex, terrain_uv * road_tex_ratio).rgb;
     } else{
         // Semantics for value 4
         diffuse = texture(white_tex, terrain_uv * road_tex_ratio).rgb;

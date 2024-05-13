@@ -84,12 +84,17 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             self.side_normal = self.loader.loadTexture(AssetLoader.file_path("textures", "sidewalk", "normal.png"))
             # self.side_normal.set_format(Texture.F_srgb)
             self.side_normal.setWrapU(Texture.WM_repeat)
-            self.side_normal.setWrapV(Texture.WM_repeat)
-            
-            self.dirty_road_patch_texture = self.loader.loadTexture(AssetLoader.file_path("drp", "test_patch.png"))            
-
+            self.side_normal.setWrapV(Texture.WM_repeat)          
             self.line_seg = make_polygon_model([(-0.5, 0.5), (-0.5, -0.5), (0.5, -0.5), (0.5, 0.5)], 0)
 
+            # Asset Loader is none if render mode is RENDER_MODE_NONE
+            dirty_road_patch_texture = self.loader.loadTexture(AssetLoader.file_path("dirty_road_patch", "test_patch.png"))
+            self.dirty_road_patch_node_path.setTexture(dirty_road_patch_texture)
+            self.dirty_road_patch_node_path.setWrapU(Texture.WM_repeat)
+            self.dirty_road_patch_node_path.setWrapV(Texture.WM_repeat)
+            self.dirty_road_patch_node_path.setMinfilter(SamplerState.FT_linear_mipmap_linear)
+            self.dirty_road_patch_node_path.setAnisotropicDegree(8)
+        
     def _sample_topology(self) -> bool:
         """
         Sample a new topology to fill self.block_network
@@ -256,6 +261,8 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
 
         self.dirty_road_patch_node_path.flattenStrong()
         self.dirty_road_patch_node_path.node().collect()
+        dmaterial = Material()
+        self.dirty_road_patch_node_path.setMaterial(dmaterial, True)
 
         # only bodies reparent to this node
         self.lane_node_path.flattenStrong()
@@ -413,10 +420,10 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         """
         Construct the dirty road patches
         """       
-        for drp_id, drp in self.dirty_road_patches.items():
-            if len(drp["polygon"]) == 0:
+        for dirty_road_patch_id, dirty_road_patch in self.dirty_road_patches.items():
+            if len(dirty_road_patch["polygon"]) == 0:
                 continue
-            polygons = TerrainProperty.clip_polygon(drp["polygon"])
+            polygons = TerrainProperty.clip_polygon(dirty_road_patch["polygon"])
             if polygons is None:
                 continue
             for polygon in polygons:
@@ -426,11 +433,13 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 np.reparentTo(self.dirty_road_patch_node_path)
                 np.setPos(0, 0, z_pos)
 
-                body_node = BaseRigidBodyNode(None, MetaDriveType.DIRTY_ROAD_PATCH)
+                body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH)
                 body_node.setKinematic(False)
                 body_node.setStatic(True)
-                body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
-                body_np.setPos(0, 0, z_pos)
+                body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)     
+                
+                # A trick allowing collision with sidewalk
+                body_np.setPos(0, 0, 1.5)
                 self._node_path_list.append(body_np)
 
                 geom = np.node().getGeom(0)
@@ -439,7 +448,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 shape = BulletTriangleMeshShape(mesh, dynamic=False)
 
                 body_node.addShape(shape)
-                self.dynamic_nodes.append(body_node)
+                self.static_nodes.append(body_node)
                 body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
                 self._node_path_list.append(np)
 

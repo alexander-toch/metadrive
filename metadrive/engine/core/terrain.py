@@ -275,7 +275,7 @@ class Terrain(BaseObject, ABC):
             self._mesh_terrain.set_shader_input("crosswalk_tex", self.crosswalk_tex)
 
             # dirty road patch
-            self._mesh_terrain.set_shader_input("drp_tex", self.drp_tex)
+            self._mesh_terrain.set_shader_input("dirty_road_patch_tex", self.dirty_road_patch)
 
             self._terrain_shader_set = True
 
@@ -530,9 +530,9 @@ class Terrain(BaseObject, ABC):
         # self.crosswalk_tex.write("test_crosswalk.png")
 
         # dirty road patch test
-        self.drp_tex = self.loader.loadTexture(AssetLoader.file_path("drp", "test_patch.png"))
-        self.drp_tex.set_wrap_u(Texture.WMRepeat)
-        self.drp_tex.set_wrap_v(Texture.WMRepeat)
+        self.dirty_road_patch = self.loader.loadTexture(AssetLoader.file_path("dirty_road_patch", "test_patch.png"))
+        self.dirty_road_patch.set_wrap_u(Texture.WMRepeat)
+        self.dirty_road_patch.set_wrap_v(Texture.WMRepeat)
 
     def _make_random_terrain(self, texture_size, terrain_size, heightfield):
         """
