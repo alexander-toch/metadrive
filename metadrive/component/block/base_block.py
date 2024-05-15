@@ -457,7 +457,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 mod.set_scale(1, tex.getXSize()*scale, tex.getYSize()*scale)
                 mod.setTwoSided(True)
                 mod.set_texture(tex)
-                mod.setR(90) # rotate the model so it's placed on the road
+                mod.setR(60) # rotate the model
                 fr = mod.find("**/frame")
                 fr.setTextureOff(1)
                 fr.set_transparency(1) # hide the frame

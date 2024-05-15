@@ -347,6 +347,7 @@ class PGBlock(BaseBlock):
             logger.warning("Dirty road patch id {} already exists!".format(str(lane.index)))
             return
         polygon = []
+        lane_center_points = []
         DIRTY_ROAD_PATCH_LENGTH = 5
         DIRTY_ROAD_PATCH_WIDTH = 3
         longs = np.array([0, DIRTY_ROAD_PATCH_LENGTH])
@@ -357,6 +358,9 @@ class PGBlock(BaseBlock):
         assert lateral_direction == -1 or lateral_direction == 1
         start_lat *= lateral_direction
         side_lat *= lateral_direction
+
+        # TODO: check center point calculation
+        lane_center_points.append(lane.position(0, 0))
         
         for k, lateral in enumerate([start_lat, side_lat]):
             if k == 1:
@@ -369,6 +373,7 @@ class PGBlock(BaseBlock):
         self.dirty_road_patches[str(lane.index)] = {
             "type": MetaDriveType.DIRTY_ROAD_PATCH,
             "polygon": polygon,
+            "lane_center_points": lane_center_points
         }
 
     def _construct_lane_line_in_block(self, lane, construct_left_right=(True, True)):
