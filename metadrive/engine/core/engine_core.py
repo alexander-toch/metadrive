@@ -1,4 +1,5 @@
 import os
+import platform
 import gc
 from panda3d.core import TexturePool, ModelPool
 import sys
@@ -88,11 +89,11 @@ class EngineCore(ShowBase.ShowBase):
     loadPrcFileData("", "model-cache-compressed-textures 1")
     loadPrcFileData("", "textures-power-2 none")
 
-    # TODO: detect OSX. for now: uncomment for OSX
-    # loadPrcFileData("", "basic-shaders-only #t")
-    # loadPrcFileData("", "notify-level-glgsg debug")
-    # loadPrcFileData("", "multisamples 4")
-    # loadPrcFileData("", "gl-version 3 2")
+    if platform.system() == "Darwin":
+        loadPrcFileData("", "basic-shaders-only #t")
+        loadPrcFileData("", "notify-level-glgsg debug")
+        loadPrcFileData("", "multisamples 4")
+        loadPrcFileData("", "gl-version 3 2")
 
 
     # loadPrcFileData("", "transform-cache 0")

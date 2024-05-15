@@ -215,6 +215,7 @@ class BaseMap(BaseRunnable, ABC):
         for obj in all_lanes.values():
             if MetaDriveType.is_lane(obj["type"]) and "lane" in layer:
                 polygons.append((obj["polygon"], MapTerrainSemanticColor.get_color(obj["type"])))
+                # TODO: generate patch here and append to polygons?
             elif "lane_line" in layer and (MetaDriveType.is_road_line(obj["type"])
                                            or MetaDriveType.is_road_boundary_line(obj["type"])):
                 if MetaDriveType.is_broken_line(obj["type"]):
