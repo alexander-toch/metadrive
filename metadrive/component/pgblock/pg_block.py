@@ -350,17 +350,14 @@ class PGBlock(BaseBlock):
         DIRTY_ROAD_PATCH_LENGTH = 5
         DIRTY_ROAD_PATCH_WIDTH = 3
         longs = np.array([0, DIRTY_ROAD_PATCH_LENGTH])
+
+        # patches for the rightmost lane
         start_lat = -lane.width_at(0) / 2 + 0.2
         side_lat = start_lat + DIRTY_ROAD_PATCH_WIDTH
         assert lateral_direction == -1 or lateral_direction == 1
         start_lat *= lateral_direction
         side_lat *= lateral_direction
-        if lane.radius != 0 and side_lat > lane.radius:
-            logger.warning(
-                "The sidewalk width ({}) is too large."
-                " It should be < radius ({})".format(side_lat, lane.radius)
-            )
-            return
+        
         for k, lateral in enumerate([start_lat, side_lat]):
             if k == 1:
                 longs = longs[::-1]

@@ -260,19 +260,19 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self.dirty_road_patch_node_path.flattenStrong()
         self.dirty_road_patch_node_path.node().collect()                  
 
-        self.dirty_road_patch_node_path.setTexScale(TextureStage.getDefault(), 0.5, 1)
-        self.dirty_road_patch_node_path.setTexRotate(TextureStage.getDefault(), 90.0)
+        # self.dirty_road_patch_node_path.setTexScale(TextureStage.getDefault(), 0.5, 1)
+        # self.dirty_road_patch_node_path.setTexRotate(TextureStage.getDefault(), 90.0)
         # self.dirty_road_patch_node_path.setTexOffset(TextureStage.getDefault(), -4, -2)
 
         # set the texutre to our dirty road patch image
-        self.dirty_road_patch_node_path.setTexture(self.dirty_road_patch_texture)
+        # self.dirty_road_patch_node_path.setTexture(self.dirty_road_patch_texture)
 
-        dmaterial = Material()
-        dmaterial.setShininess(0)
-        dmaterial.setAmbient((0, 0, 0, 1))
+        # dmaterial = Material()
+        # dmaterial.setShininess(0)
+        # dmaterial.setAmbient((0, 0, 0, 1))
         # dmaterial.setEmission((1, 1, 1, 0.1))
-        dmaterial.setSpecular((1, 1, 1, 1))
-        self.dirty_road_patch_node_path.setMaterial(dmaterial, True)
+        # dmaterial.setSpecular((1, 1, 1, 1))
+        # self.dirty_road_patch_node_path.setMaterial(dmaterial, True)
 
         # tsd.setColor((1, 1, 1, 1))
         # self.dirty_road_patch_node_path.setTexture(tsd, self.dirty_road_patch_texture)
@@ -443,31 +443,47 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             if polygons is None:
                 continue
             for polygon in polygons:
-                height = 0.05
-                z_pos = height / 2
-                np = make_polygon_model(polygon, height)
-                np.reparentTo(self.dirty_road_patch_node_path)
-                np.setPos(0, 0, z_pos)
+                # height = 0.05
+                # z_pos = height / 2
+                # np = make_polygon_model(polygon, height)
+                # dirty_road_patch = self._place_dirty_road_patch(np)
+                # dirty_road_patch.reparentTo(self.dirty_road_patch_node_path)
+                # dirty_road_patch.setPos(0, 0, z_pos)
 
-                body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)
-                body_node.setKinematic(False) # no kinematics needed
-                body_node.setStatic(True) # Dynamic bodies are similar to static bodies. Except that dynamic bodies can be moved around the world by applying force or torque
 
-                # not needed?
-                # body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
-                # A trick allowing collision with sidewalk
-                # body_np.setPos(0, 0, 1.5)
-                # self._node_path_list.append(body_np)
+                scale = 0.02
+                mod = self.loader.loadModel(AssetLoader.file_path_dirty_road_patch("canvas.egg"))
+                tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("test_patch.png"))
+                mod.set_scale(1, tex.getXSize()*scale, tex.getYSize()*scale)
+                mod.setTwoSided(True)
+                mod.set_texture(tex)
+                mod.setR(90) # rotate the model so it's placed on the road
+                fr = mod.find("**/frame")
+                fr.setTextureOff(1)
+                fr.set_transparency(1) # hide the frame
+                mod.flatten_light()
+                mod.reparent_to(self.dirty_road_patch_node_path)
+                mod.set_pos(20, 0, 0.05)
 
-                geom = np.node().getGeom(0)
-                mesh = BulletTriangleMesh()
-                mesh.addGeom(geom)
-                shape = BulletTriangleMeshShape(mesh, dynamic=False)
+                # body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)
+                # body_node.setKinematic(False) # no kinematics needed
+                # body_node.setStatic(True) # Dynamic bodies are similar to static bodies. Except that dynamic bodies can be moved around the world by applying force or torque
 
-                body_node.addShape(shape)
-                self.static_nodes.append(body_node)
-                body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
-                self._node_path_list.append(np)
+                # # not needed?
+                # # body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
+                # # A trick allowing collision with sidewalk
+                # # body_np.setPos(0, 0, 1.5)
+                # # self._node_path_list.append(body_np)
+
+                # geom = np.node().getGeom(0)
+                # mesh = BulletTriangleMesh()
+                # mesh.addGeom(geom)
+                # shape = BulletTriangleMeshShape(mesh, dynamic=False)
+
+                # body_node.addShape(shape)
+                # self.static_nodes.append(body_node)
+                # body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
+                # self._node_path_list.append(np)
 
     def _construct_crosswalk(self):
         """

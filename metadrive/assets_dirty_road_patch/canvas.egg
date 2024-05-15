@@ -1,0 +1,92 @@
+<CoordinateSystem> { Z-Up }
+
+<Group>  canvas {
+ <VertexPool> canvas {
+  <Vertex> 0 { 0.03 -0.5 -0.5 
+   <UV> { 0 0 }
+  }
+  <Vertex> 1 { 0.03 0.5 -0.5 
+   <UV> { 1 0 }
+  }
+  <Vertex> 2 { 0.03 0.5 0.5 
+   <UV> { 1 1 }
+  }
+  <Vertex> 3 { 0.03 -0.5 0.5 
+   <UV> { 0 1 }
+  }
+ }
+
+ <Polygon> 0 { 
+  <Normal> { 1 -0 -0 }
+  <VertexRef> { 0 1 2 3 <Ref> { canvas } }
+  }
+<Group> frame {
+ <VertexPool> frame {
+  <Vertex> 0 { 0 0.5 0.5 
+   <UV> { 0.999995 0.030032 }
+  }
+  <Vertex> 1 { -0 -0.5 0.5 
+   <UV> { 0.000017 0.030031 }
+  }
+  <Vertex> 2 { 0.03 -0.5 0.5 
+   <UV> { 0.000017 0.000032 }
+  }
+  <Vertex> 3 { 0.03 0.5 0.5 
+   <UV> { 0.999995 0.000032 }
+  }
+  <Vertex> 4 { -0 -0.5 -0.5 
+   <UV> { 0.99998 0.04007 }
+  }
+  <Vertex> 5 { 0 0.5 -0.5 
+   <UV> { 0.00002 0.040069 }
+  }
+  <Vertex> 6 { 0.03 0.5 -0.5 
+   <UV> { 0.00002 0.00002 }
+  }
+  <Vertex> 7 { 0.03 -0.5 -0.5 
+   <UV> { 0.99998 0.00002 }
+  }
+  <Vertex> 8 { 0 0.5 -0.5 
+   <UV> { 0.99998 0.04007 }
+  }
+  <Vertex> 9 { 0 0.5 0.5 
+   <UV> { 0.00002 0.040069 }
+  }
+  <Vertex> 10 { 0.03 0.5 0.5 
+   <UV> { 0.00002 0.00002 }
+  }
+  <Vertex> 11 { 0.03 0.5 -0.5 
+   <UV> { 0.99998 0.00002 }
+  }
+  <Vertex> 12 { -0 -0.5 0.5 
+   <UV> { 0.00002 0.00002 }
+  }
+  <Vertex> 13 { -0 -0.5 -0.5 
+   <UV> { 0.99998 0.000021 }
+  }
+  <Vertex> 14 { 0.03 -0.5 -0.5 
+   <UV> { 0.99998 0.04007 }
+  }
+  <Vertex> 15 { 0.03 -0.5 0.5 
+   <UV> { 0.00002 0.04007 }
+  }
+ }
+
+ <Polygon> 0 { 
+  <Normal> { 0 -0 1 }
+  <VertexRef> { 0 1 2 3 <Ref> { frame } }
+  }
+ <Polygon> 1 { 
+  <Normal> { 0 0 -1 }
+  <VertexRef> { 4 5 6 7 <Ref> { frame } }
+  }
+ <Polygon> 2 { 
+  <Normal> { 0 1 0 }
+  <VertexRef> { 8 9 10 11 <Ref> { frame } }
+  }
+ <Polygon> 3 { 
+  <Normal> { 0 -1 -0 }
+  <VertexRef> { 12 13 14 15 <Ref> { frame } }
+  }
+}
+}

@@ -17,6 +17,9 @@ class AssetLoader:
     asset_path = pathlib.PurePosixPath(__file__).parent.parent.joinpath("assets") if not is_win(
     ) else pathlib.Path(__file__).resolve().parent.parent.joinpath("assets")
 
+    asset_path_dirty_road_patch = pathlib.PurePosixPath(__file__).parent.parent.joinpath("assets_dirty_road_patch") if not is_win(
+    ) else pathlib.Path(__file__).resolve().parent.parent.joinpath("assets_dirty_road_patch")
+
     @staticmethod
     def init_loader(engine):
         """
@@ -72,6 +75,19 @@ class AssetLoader:
         :return: file path used to load asset
         """
         path = AssetLoader.asset_path.joinpath(*path_string)
+        return AssetLoader.windows_style2unix_style(path
+                                                    ) if sys.platform.startswith("win") and unix_style else str(path)
+    
+    @staticmethod
+    def file_path_dirty_road_patch(*path_string, unix_style=True):
+        """
+        Usage is the same as path.join(dir_1,dir_2,file_name)
+        :param path_string: a tuple
+        :param unix_style: it will convert windows path style to unix style. This is because panda uses unix style path
+        to find assets.
+        :return: file path used to load asset
+        """
+        path = AssetLoader.asset_path_dirty_road_patch.joinpath(*path_string)
         return AssetLoader.windows_style2unix_style(path
                                                     ) if sys.platform.startswith("win") and unix_style else str(path)
 

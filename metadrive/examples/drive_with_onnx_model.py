@@ -60,7 +60,7 @@ if __name__ == "__main__":
         BaseMap.GENERATE_TYPE: MapGenerateMethod.BIG_BLOCK_SEQUENCE,
         # BaseMap.GENERATE_CONFIG: 3,
         BaseMap.LANE_WIDTH: 3.5,
-        BaseMap.LANE_NUM: 2,
+        BaseMap.LANE_NUM: 1,
     }
 
     config = dict(
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     try:
         o, _ = env.reset()
         print(HELP_MESSAGE)
-        env.vehicle.expert_takeover = True
+        env.vehicle.expert_takeover = False
 
         assert isinstance(o, dict)
         print(
