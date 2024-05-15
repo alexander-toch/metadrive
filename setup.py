@@ -49,9 +49,9 @@ install_requires = [
     "tqdm",
     "progressbar",
     # "panda3d==1.10.8",
-    "panda3d==1.10.13",
+    "panda3d==1.10.14",
     "panda3d-gltf==0.13",  # 0.14 will bring some problems
-    "panda3d-simplepbr==0.10",
+    "panda3d-simplepbr==0.11.2",
     "pillow",
     "pytest",
     "opencv-python",

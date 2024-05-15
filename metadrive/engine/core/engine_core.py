@@ -90,10 +90,15 @@ class EngineCore(ShowBase.ShowBase):
     loadPrcFileData("", "textures-power-2 none")
 
     if platform.system() == "Darwin":
-        loadPrcFileData("", "basic-shaders-only #t")
-        loadPrcFileData("", "notify-level-glgsg debug")
-        loadPrcFileData("", "multisamples 4")
+        # loadPrcFileData("", "basic-shaders-only #t")
+        # loadPrcFileData("", "notify-level-cocoadisplay spam")
+        # loadPrcFileData("", "gl-check-errors #t")
+        # loadPrcFileData("", "gl-debug #t")
+        # loadPrcFileData("", "gl-debug-buffers #t")      
+        # loadPrcFileData("", "gl-dump-compiled-shaders  #t")      
+        # loadPrcFileData("", "notify-level-glgsg spam")        
         loadPrcFileData("", "gl-version 3 2")
+        loadPrcFileData("", "multisamples 4")
 
 
     # loadPrcFileData("", "transform-cache 0")
