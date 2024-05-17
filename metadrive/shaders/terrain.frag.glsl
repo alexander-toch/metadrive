@@ -146,9 +146,9 @@ void main() {
         float theta=(value-0.39999) * 1000/180 * 3.1415926535;
         vec2 new_terrain_uv = vec2(cos(theta)*terrain_uv.x - sin(theta)*terrain_uv.y, sin(theta)*terrain_uv.x+cos(theta)*terrain_uv.y);
         diffuse = texture(crosswalk_tex, new_terrain_uv * road_tex_ratio).rgb;
-    // } else if (value > 0.7999 && value < 0.81) {
-    //     // dirty road patch        
-    //     diffuse = texture(dirty_road_patch_tex, terrain_uv * road_tex_ratio).rgb;
+    } else if (value > 0.7999 && value < 0.81) {
+        // dirty road patch        
+        diffuse = texture(white_tex, terrain_uv * road_tex_ratio).rgb;
     } else{
         // Semantics for value 4
         diffuse = texture(white_tex, terrain_uv * road_tex_ratio).rgb;

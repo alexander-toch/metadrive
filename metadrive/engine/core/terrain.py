@@ -274,8 +274,6 @@ class Terrain(BaseObject, ABC):
             # crosswalk
             self._mesh_terrain.set_shader_input("crosswalk_tex", self.crosswalk_tex)
 
-            # dirty road patch
-            self._mesh_terrain.set_shader_input("dirty_road_patch_tex", self.dirty_road_patch)
 
             self._terrain_shader_set = True
 
@@ -288,7 +286,6 @@ class Terrain(BaseObject, ABC):
                 lane_line_semantics=to_float(Semantics.LANE_LINE.color),
                 road_semantics=to_float(Semantics.ROAD.color),
                 ground_semantics=to_float(Semantics.TERRAIN.color),
-                dirty_road_patch_semantics=to_float(Semantics.DIRTY_ROAD_PATCH.color),
             )
         self._mesh_terrain.set_shader_input("attribute_tex", attribute_tex)
 
@@ -528,11 +525,6 @@ class Terrain(BaseObject, ABC):
         self.crosswalk_tex.setup2dTexture(*tex.shape[:2], Texture.TUnsignedByte, Texture.F_rgb)
         self.crosswalk_tex.setRamImage(tex)
         # self.crosswalk_tex.write("test_crosswalk.png")
-
-        # dirty road patch test
-        self.dirty_road_patch = self.loader.loadTexture(AssetLoader.file_path("dirty_road_patch", "test_patch.png"))
-        self.dirty_road_patch.set_wrap_u(Texture.WMRepeat)
-        self.dirty_road_patch.set_wrap_v(Texture.WMRepeat)
 
     def _make_random_terrain(self, texture_size, terrain_size, heightfield):
         """

@@ -87,11 +87,6 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             self.side_normal.setWrapV(Texture.WM_repeat)          
             self.line_seg = make_polygon_model([(-0.5, 0.5), (-0.5, -0.5), (0.5, -0.5), (0.5, 0.5)], 0)
 
-            # Asset Loader is none if render mode is RENDER_MODE_NONE
-            self.dirty_road_patch_texture = self.loader.loadTexture(AssetLoader.file_path("dirty_road_patch", "test_patch.png"))
-            self.dirty_road_patch_texture.setWrapU(Texture.WM_repeat)
-            self.dirty_road_patch_texture.setWrapV(Texture.WM_repeat)
-
         
     def _sample_topology(self) -> bool:
         """
@@ -260,17 +255,11 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self.dirty_road_patch_node_path.flattenStrong()
         self.dirty_road_patch_node_path.node().collect()                  
 
-        # self.dirty_road_patch_node_path.setTexScale(TextureStage.getDefault(), 0.5, 1)
-        # self.dirty_road_patch_node_path.setTexRotate(TextureStage.getDefault(), 90.0)
-        # self.dirty_road_patch_node_path.setTexOffset(TextureStage.getDefault(), -4, -2)
-
-        # set the texutre to our dirty road patch image
-        # self.dirty_road_patch_node_path.setTexture(self.dirty_road_patch_texture)
-
         # dmaterial = Material()
-        # dmaterial.setShininess(0)
-        # dmaterial.setAmbient((0, 0, 0, 1))
-        # dmaterial.setEmission((1, 1, 1, 0.1))
+        # dmaterial.setShininess(1)
+        # dmaterial.setAmbient((0, 0, 0, 0))
+        # dmaterial.setEmission((0, 0, 0, 0))
+        # dmaterial.setTwoside(True)
         # dmaterial.setSpecular((1, 1, 1, 1))
         # self.dirty_road_patch_node_path.setMaterial(dmaterial, True)
 
@@ -453,21 +442,23 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
 
                 scale = 0.02
                 mod = self.loader.loadModel(AssetLoader.file_path_dirty_road_patch("canvas.egg"))
-                tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("test_patch.png"))
+                tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("test_patch.jpg"))
                 mod.set_scale(1, tex.getXSize()*scale, tex.getYSize()*scale)
                 mod.setTwoSided(True)
                 mod.set_texture(tex)
-                mod.setR(60) # rotate the model
+                mod.setDepthOffset(1)
+                # mod.setR(60) # rotate the model
                 fr = mod.find("**/frame")
                 fr.setTextureOff(1)
                 fr.set_transparency(1) # hide the frame
                 mod.flatten_light()
                 mod.reparent_to(self.dirty_road_patch_node_path)
                 mod.set_pos(20, 0, 0.05)
+                self._node_path_list.append(mod)
 
-                # body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)
-                # body_node.setKinematic(False) # no kinematics needed
-                # body_node.setStatic(True) # Dynamic bodies are similar to static bodies. Except that dynamic bodies can be moved around the world by applying force or torque
+                body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)
+                body_node.setKinematic(False) # no kinematics needed
+                body_node.setStatic(True) # Dynamic bodies are similar to static bodies. Except that dynamic bodies can be moved around the world by applying force or torque
 
                 # # not needed?
                 # # body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
@@ -475,15 +466,17 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 # # body_np.setPos(0, 0, 1.5)
                 # # self._node_path_list.append(body_np)
 
-                # geom = np.node().getGeom(0)
-                # mesh = BulletTriangleMesh()
-                # mesh.addGeom(geom)
-                # shape = BulletTriangleMeshShape(mesh, dynamic=False)
+                mesh = BulletTriangleMesh()
+                for geomNP in mod.findAllMatches('**/+GeomNode'):
+                    geomNode = geomNP.node()
+                    ts = geomNode.getTransform()
+                    for geom in geomNode.getGeoms():
+                        mesh.addGeom(geom, True, ts)
 
-                # body_node.addShape(shape)
-                # self.static_nodes.append(body_node)
-                # body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
-                # self._node_path_list.append(np)
+                shape = BulletTriangleMeshShape(mesh, dynamic=False)
+                body_node.addShape(shape)
+                self.static_nodes.append(body_node)
+                body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
 
     def _construct_crosswalk(self):
         """
