@@ -132,6 +132,24 @@ void main() {
     vec4 base_color = p3d_Material.baseColor * v_color * p3d_ColorScale * texture2D(p3d_TextureBaseColor, v_texcoord);
     vec3 diffuse_color = (base_color.rgb * (vec3(1.0) - F0)) * (1.0 - metallic);
     vec3 spec_color = mix(F0, base_color.rgb, metallic);
+
+    bool is_dirty_road_patch = false;
+
+    if (p3d_Material.roughness > 0.419 && p3d_Material.roughness < 0.43) {
+        is_dirty_road_patch = true;
+    }
+    if (is_dirty_road_patch) {
+        vec4 patch_color = texture2D(p3d_TextureBaseColor, v_texcoord);
+        float contrast = 1.0;
+        float brightness = 1.0;
+
+        patch_color = mix(patch_color * brightness, 
+            mix(vec4(0.9, 0.9, 0.9, 1.0), patch_color, contrast), 0.5);
+        patch_color.a = 0.42;
+        FragColor = patch_color;
+        return;
+    }
+
 #ifdef USE_NORMAL_MAP
     vec3 n = normalize(v_tbn * (2.0 * texture2D(p3d_TextureNormal, v_texcoord).rgb - 1.0));
 #else
@@ -242,6 +260,7 @@ void main() {
         vec3 spec_contrib = vec3(F * V * D);
         color.rgb += func_params.n_dot_l * lightcol * (diffuse_contrib + spec_contrib) * shadow;
     }
+
 
     color.rgb += diffuse_color * p3d_LightModel.ambient.rgb * ambient_occlusion;
     color.rgb += emission;

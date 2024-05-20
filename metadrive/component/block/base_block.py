@@ -255,13 +255,10 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         self.dirty_road_patch_node_path.flattenStrong()
         self.dirty_road_patch_node_path.node().collect()                  
 
-        # dmaterial = Material()
-        # dmaterial.setShininess(1)
-        # dmaterial.setAmbient((0, 0, 0, 0))
-        # dmaterial.setEmission((0, 0, 0, 0))
-        # dmaterial.setTwoside(True)
-        # dmaterial.setSpecular((1, 1, 1, 1))
-        # self.dirty_road_patch_node_path.setMaterial(dmaterial, True)
+        dmaterial = Material()
+        dmaterial.setTwoside(True)
+        dmaterial.setRoughness(0.42) # magic value for shader (simnplepbr.frag abd tonemap.frag)
+        self.dirty_road_patch_node_path.setMaterial(dmaterial, True)
 
         # tsd.setColor((1, 1, 1, 1))
         # self.dirty_road_patch_node_path.setTexture(tsd, self.dirty_road_patch_texture)

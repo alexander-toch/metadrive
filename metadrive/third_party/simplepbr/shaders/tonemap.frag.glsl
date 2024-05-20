@@ -11,6 +11,12 @@ out vec4 o_color;
 
 void main() {
     vec3 color = texture2D(tex, v_texcoord).rgb;
+    float a = texture2D(tex, v_texcoord).a;
+
+    if (a > 0.419 && a < 0.43) {
+        gl_FragColor = vec4(color, 1.0);
+        return;
+    }
 
     color *= exposure;
     color = max(vec3(0.0), color - vec3(0.004));
