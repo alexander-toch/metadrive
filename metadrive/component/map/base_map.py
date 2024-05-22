@@ -215,7 +215,6 @@ class BaseMap(BaseRunnable, ABC):
         for obj in all_lanes.values():
             if MetaDriveType.is_lane(obj["type"]) and "lane" in layer:
                 polygons.append((obj["polygon"], MapTerrainSemanticColor.get_color(obj["type"])))
-                # TODO: generate patch here and append to polygons?
             elif "lane_line" in layer and (MetaDriveType.is_road_line(obj["type"])
                                            or MetaDriveType.is_road_boundary_line(obj["type"])):
                 if MetaDriveType.is_broken_line(obj["type"]):
@@ -276,19 +275,7 @@ class BaseMap(BaseRunnable, ABC):
                 angle = angle / 1000 + MapTerrainSemanticColor.get_color(MetaDriveType.CROSSWALK)
                 cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=angle)
 
-
-        if "dirty_road_patch" in layer:
-            for id, dirty_road_patch in self.dirty_road_patches.items():
-                print("dirty_road_patch fillPoly")
-                polygon = dirty_road_patch["polygon"]
-                points = [
-                    [
-                        int((x - center_p[0]) * pixels_per_meter + size / 2),
-                        int((y - center_p[1]) * pixels_per_meter) + size / 2
-                    ] for x, y in polygon
-                ]
-                cv2.fillPoly(mask, np.array([points]).astype(np.int32), color=MapTerrainSemanticColor.get_color(MetaDriveType.DIRTY_ROAD_PATCH))
-            self._semantic_map = mask
+        self._semantic_map = mask
         return self._semantic_map
         return mask
 

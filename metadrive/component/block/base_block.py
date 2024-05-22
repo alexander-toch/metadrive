@@ -422,6 +422,9 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         """
         Construct the dirty road patches
         """       
+        if self.engine.global_config["enable_dirty_road_patch_attack"] is not True:
+            return
+
         for dirty_road_patch_id, dirty_road_patch in self.dirty_road_patches.items():
             if len(dirty_road_patch["polygon"]) == 0:
                 continue
@@ -437,20 +440,21 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 # dirty_road_patch.setPos(0, 0, z_pos)
 
 
-                scale = 0.02
+                scale = 0.005
                 mod = self.loader.loadModel(AssetLoader.file_path_dirty_road_patch("canvas.egg"))
                 tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("test_patch.jpg"))
+                tex.setMagfilter(SamplerState.FTShadow) # SamplerState.FT_linear_mipmap_linear or FTShadow
+                tex.setMinfilter(SamplerState.FTShadow)
                 mod.set_scale(1, tex.getXSize()*scale, tex.getYSize()*scale)
                 mod.setTwoSided(True)
                 mod.set_texture(tex)
                 mod.setDepthOffset(1)
-                # mod.setR(60) # rotate the model
                 fr = mod.find("**/frame")
                 fr.setTextureOff(1)
                 fr.set_transparency(1) # hide the frame
                 mod.flatten_light()
                 mod.reparent_to(self.dirty_road_patch_node_path)
-                mod.set_pos(20, 0, 0.05)
+                mod.set_pos(20, 0, 0.5)
                 self._node_path_list.append(mod)
 
                 body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)

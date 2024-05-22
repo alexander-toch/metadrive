@@ -51,6 +51,7 @@ SCENARIO_ENV_CONFIG = dict(
     skip_missing_light=True,
     static_traffic_object=True,
     show_sidewalk=False,
+    enable_dirty_road_patch_attack=False,
 
     # ===== Agent config =====
     vehicle_config=dict(

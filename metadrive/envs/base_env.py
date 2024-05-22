@@ -227,6 +227,8 @@ BASE_DEFAULT_CONFIG = dict(
     show_crosswalk=True,
     # Whether to show sidewalk
     show_sidewalk=True,
+    # Whether to show dirty road patches
+    enable_dirty_road_patch_attack=False,
 
     # ===== Debug =====
     # Please see Documentation: Debug for more details
