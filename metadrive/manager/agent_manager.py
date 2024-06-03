@@ -65,11 +65,11 @@ class VehicleAgentManager(BaseAgentManager):
         # and external control device (whose action is input via controller).
         if get_global_config()["agent_policy"] in [TakeoverPolicy, TakeoverPolicyWithoutBrake]:
             return get_global_config()["agent_policy"]
-        if get_global_config()["manual_control"]:
-            if get_global_config().get("use_AI_protector", False):
-                policy = AIProtectPolicy
-            else:
-                policy = ManualControlPolicy
+        # if get_global_config()["manual_control"]:
+        #     if get_global_config().get("use_AI_protector", False):
+        #         policy = AIProtectPolicy
+        #     else:
+        #         policy = ManualControlPolicy
         else:
             policy = get_global_config()["agent_policy"]
         return policy
