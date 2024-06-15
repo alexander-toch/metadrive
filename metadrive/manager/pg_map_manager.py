@@ -53,7 +53,7 @@ class PGMapManager(BaseManager):
         config = self.engine.global_config.copy()
         current_seed = self.engine.global_seed
 
-        if self.maps[current_seed] is None:
+        if self.maps[current_seed] is None or self.engine.global_config["force_map_generation"]:
             map_config = config["map_config"]
             map_config.update({"seed": current_seed})
             map_config = self.add_random_to_map(map_config)

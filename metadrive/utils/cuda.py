@@ -29,7 +29,9 @@ def check_cudart_err(args):
 
     assert isinstance(err, cudart.cudaError_t), type(err)
     if err != cudart.cudaError_t.cudaSuccess:
-        raise RuntimeError(format_cudart_err(err))
+       print(f"CUDA ERROR: {format_cudart_err(err)}")
+       import traceback
+       traceback.print_stack()
 
     return ret
 

@@ -229,6 +229,10 @@ BASE_DEFAULT_CONFIG = dict(
     show_sidewalk=True,
     # Whether to show dirty road patches
     enable_dirty_road_patch_attack=False,
+    dirty_road_patch_attack_step_index=None,
+
+    # disables the Map cache
+    force_map_generation=False,
 
     # ===== Debug =====
     # Please see Documentation: Debug for more details
