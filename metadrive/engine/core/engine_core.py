@@ -81,6 +81,7 @@ def attach_logo(engine):
 class EngineCore(ShowBase.ShowBase):
     DEBUG = False
     global_config = None  # global config can exist before engine initialization
+    dirty_road_patch_object = None
     loadPrcFileData("", "window-title {}".format(EDITION))
     loadPrcFileData("", "framebuffer-multisample 1")
     loadPrcFileData("", "multisamples 8")
@@ -132,6 +133,7 @@ class EngineCore(ShowBase.ShowBase):
 
         self.pid = os.getpid()
         EngineCore.global_config = global_config
+        EngineCore.dirty_road_patch_object = None
         self.mode = global_config["_render_mode"]
         if self.global_config["pstats"]:
             # pstats debug provided by panda3d

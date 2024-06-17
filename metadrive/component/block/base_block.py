@@ -431,7 +431,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             polygons = TerrainProperty.clip_polygon(dirty_road_patch["polygon"])
             if polygons is None:
                 continue
-            for polygon in polygons:
+            for _ in polygons:
                 # height = 0.05
                 # z_pos = height / 2
                 # np = make_polygon_model(polygon, height)
@@ -439,10 +439,18 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 # dirty_road_patch.reparentTo(self.dirty_road_patch_node_path)
                 # dirty_road_patch.setPos(0, 0, z_pos)
 
+                if self.engine.dirty_road_patch_object is not None:
+                    shape = self.engine.dirty_road_patch_object.patch.shape
+                    buf = self.engine.dirty_road_patch_object.patch.astype(np.uint8).tobytes()
+                    tex = Texture()
+                    tex.setup2dTexture(shape[1], shape[0], Texture.T_unsigned_byte, Texture.F_rgb8)
+                    tex.setRamImage(buf)
+                    self.dirty_road_patch_node_path.setTexRotate(TextureStage.getDefault(), 180)
+                else:
+                    tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("test_patch.jpg"))
 
                 scale = 0.005
                 mod = self.loader.loadModel(AssetLoader.file_path_dirty_road_patch("canvas.egg"))
-                tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("test_patch.jpg"))
                 tex.setMagfilter(SamplerState.FTShadow) # SamplerState.FT_linear_mipmap_linear or FTShadow
                 tex.setMinfilter(SamplerState.FTShadow)
                 mod.set_scale(1, tex.getXSize()*scale, tex.getYSize()*scale)
@@ -454,7 +462,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 fr.set_transparency(1) # hide the frame
                 mod.flatten_light()
                 mod.reparent_to(self.dirty_road_patch_node_path)
-                mod.set_pos(20, 0, 0.5)
+                mod.set_pos(20, 0, 0.5) # TODO: set pos according to settings
                 self._node_path_list.append(mod)
 
                 body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)
