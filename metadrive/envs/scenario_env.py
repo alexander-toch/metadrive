@@ -54,6 +54,7 @@ SCENARIO_ENV_CONFIG = dict(
     enable_dirty_road_patch_attack=False,
     dirty_road_patch_attack_step_index=None,
     force_map_generation=False,
+    save_probmaps=False,
 
     # ===== Agent config =====
     vehicle_config=dict(

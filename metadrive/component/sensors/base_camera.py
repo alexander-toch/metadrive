@@ -2,8 +2,7 @@ from typing import Union
 
 import cv2
 import numpy as np
-from panda3d.core import NodePath
-
+from panda3d.core import NodePath, Lens
 from metadrive.component.sensors.base_sensor import BaseSensor
 from metadrive.utils.cuda import check_cudart_err
 
@@ -168,13 +167,21 @@ class BaseCamera(ImageBuffer, BaseSensor):
 
             # reparent to new parent node
             self.cam.reparentTo(new_parent_node)
-            # relative position
-            assert len(position) == 3, "The first parameter of camera.perceive() should be a BaseObject instance " \
-                                       "or a 3-dim vector representing the (x,y,z) position."
-            self.cam.setPos(Vec3(*position))
-            assert len(hpr) == 3, "The hpr parameter of camera.perceive() should be  a 3-dim vector representing " \
-                                  "the heading/pitch/roll."
-            self.cam.setHpr(Vec3(*hpr))
+
+        if position is None:
+            position = constants.DEFAULT_SENSOR_OFFSET
+        if hpr is None:
+            hpr = constants.DEFAULT_SENSOR_HPR
+
+         # relative position
+        assert len(position) == 3, "The first parameter of camera.perceive() should be a BaseObject instance " \
+                                    "or a 3-dim vector representing the (x,y,z) position."
+        self.cam.setPos(Vec3(*position))
+        assert len(hpr) == 3, "The hpr parameter of camera.perceive() should be  a 3-dim vector representing " \
+                                "the heading/pitch/roll."
+        self.cam.setHpr(Vec3(*hpr))
+
+        if new_parent_node:
             self.engine.taskMgr.step()
 
         if self.enable_cuda:
@@ -202,7 +209,7 @@ class BaseCamera(ImageBuffer, BaseSensor):
     def get_cam(self):
         return self.cam
 
-    def get_lens(self):
+    def get_lens(self) -> Lens:
         return self.lens
 
     # # following functions are for onscreen render

@@ -431,7 +431,13 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             polygons = TerrainProperty.clip_polygon(dirty_road_patch["polygon"])
             if polygons is None:
                 continue
-            for _ in polygons:
+
+            PATCH_COUNT = 4
+            FIRST_PATCH_DISTANCE = 20
+            PATCH_DISTANCE = 50
+
+            # for _ in polygons:
+            for patch_index in range(PATCH_COUNT):
                 # height = 0.05
                 # z_pos = height / 2
                 # np = make_polygon_model(polygon, height)
@@ -447,22 +453,37 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                     tex.setRamImage(buf)
                     self.dirty_road_patch_node_path.setTexRotate(TextureStage.getDefault(), 180)
                 else:
-                    tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("test_patch.jpg"))
+                    tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("patch_100.jpg"))
 
-                scale = 0.005
                 mod = self.loader.loadModel(AssetLoader.file_path_dirty_road_patch("canvas.egg"))
+
+                PATCH_SIZE_METERS = (1., 1.)
+                model_bounds =  mod.getTightBounds()
+
+                model_width = np.abs(model_bounds[0][1] - model_bounds[1][1])
+                model_height = np.abs(model_bounds[0][2] - model_bounds[1][2])
+                scale_x = PATCH_SIZE_METERS[0] / model_width
+                scale_y = PATCH_SIZE_METERS[1] / model_height
+                scale = (scale_x, scale_y, 1)
+
                 tex.setMagfilter(SamplerState.FTShadow) # SamplerState.FT_linear_mipmap_linear or FTShadow
                 tex.setMinfilter(SamplerState.FTShadow)
-                mod.set_scale(1, tex.getXSize()*scale, tex.getYSize()*scale)
-                mod.setTwoSided(True)
-                mod.set_texture(tex)
-                mod.setDepthOffset(1)
+
                 fr = mod.find("**/frame")
                 fr.setTextureOff(1)
                 fr.set_transparency(1) # hide the frame
+
+                mod.set_scale(1, scale[0], scale[1])
+                mod.setTwoSided(True)
+                mod.set_texture(tex)
+                mod.setDepthOffset(1)
+               
                 mod.flatten_light()
                 mod.reparent_to(self.dirty_road_patch_node_path)
-                mod.set_pos(20, 0, 0.5) # TODO: set pos according to settings
+
+                mod.set_pos(FIRST_PATCH_DISTANCE + PATCH_DISTANCE * patch_index, 0, 0.5) # TODO: set pos according to settings
+                if self.engine.dirty_road_patch_object is None:
+                    mod.set_hpr(180.0, 0, 0) # mirror texture
                 self._node_path_list.append(mod)
 
                 body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)
