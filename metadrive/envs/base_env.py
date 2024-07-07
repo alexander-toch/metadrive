@@ -231,6 +231,9 @@ BASE_DEFAULT_CONFIG = dict(
     enable_dirty_road_patch_attack=False,
     dirty_road_patch_attack_step_index=None,
     save_probmaps=False,
+    patch_size_meters=(1.0, 1.0), # (width, length)
+    place_patch_in_image_stream=False,
+    patch_geneneration_iterations=50,
 
     # disables the Map cache
     force_map_generation=False,

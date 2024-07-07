@@ -1,5 +1,5 @@
 import logging
-from metadrive.constants import Semantics, CameraTagStateKey
+from metadrive.constants import DEFAULT_SENSOR_OFFSET, Semantics, CameraTagStateKey
 import math
 import warnings
 from abc import ABC
@@ -14,6 +14,7 @@ from panda3d.core import TextureStage
 from panda3d.core import Vec3, LQuaternionf, RigidBodyCombiner, \
     SamplerState, NodePath, Texture
 from panda3d.core import Vec4
+from panda3d.core import CardMaker
 
 from metadrive.base_class.base_object import BaseObject
 from metadrive.component.road_network.node_road_network import NodeRoadNetwork
@@ -438,75 +439,37 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
 
             # for _ in polygons:
             for patch_index in range(PATCH_COUNT):
-                # height = 0.05
-                # z_pos = height / 2
-                # np = make_polygon_model(polygon, height)
-                # dirty_road_patch = self._place_dirty_road_patch(np)
-                # dirty_road_patch.reparentTo(self.dirty_road_patch_node_path)
-                # dirty_road_patch.setPos(0, 0, z_pos)
-
                 if self.engine.dirty_road_patch_object is not None:
                     shape = self.engine.dirty_road_patch_object.patch.shape
-                    buf = self.engine.dirty_road_patch_object.patch.astype(np.uint8).tobytes()
+                    # flip image to match panda3d rendering and rotate 180 degrees ([::-1,::-1])
+                    buf = np.fliplr(self.engine.dirty_road_patch_object.patch[::-1,::-1]).astype(np.uint8).tobytes()
                     tex = Texture()
                     tex.setup2dTexture(shape[1], shape[0], Texture.T_unsigned_byte, Texture.F_rgb8)
                     tex.setRamImage(buf)
-                    self.dirty_road_patch_node_path.setTexRotate(TextureStage.getDefault(), 180)
+                    tex.setAnisotropicDegree(8) 
                 else:
-                    tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("patch_100.jpg"))
+                    tex = self.loader.loadTexture(AssetLoader.file_path_dirty_road_patch("patch_50.jpg"))
+                    shape = (tex.getYSize(), tex.getXSize())
 
-                mod = self.loader.loadModel(AssetLoader.file_path_dirty_road_patch("canvas.egg"))
+                # add a blue border around the texture for debugging
+                tex.setWrapU(Texture.WM_border_color)
+                tex.setWrapV(Texture.WM_border_color)
+                tex.setBorderColor((0.4, 0.5, 1, 1))
 
-                PATCH_SIZE_METERS = (1., 1.)
-                model_bounds =  mod.getTightBounds()
+                cm = CardMaker('card')
+                card = self.dirty_road_patch_node_path.attachNewNode(cm.generate())
+            
+                card.set_hpr(-90, 0, 0) # rotate card so that it is visible to the car
 
-                model_width = np.abs(model_bounds[0][1] - model_bounds[1][1])
-                model_height = np.abs(model_bounds[0][2] - model_bounds[1][2])
-                scale_x = PATCH_SIZE_METERS[0] / model_width
-                scale_y = PATCH_SIZE_METERS[1] / model_height
-                scale = (scale_x, scale_y, 1)
+                card.setScale(1, 1, shape[1] / shape[0])
 
-                tex.setMagfilter(SamplerState.FTShadow) # SamplerState.FT_linear_mipmap_linear or FTShadow
-                tex.setMinfilter(SamplerState.FTShadow)
+                card_bounds = card.getTightBounds()
+                card_width = np.abs(card_bounds[0][1] - card_bounds[1][1])
+                card_height = np.abs(card_bounds[0][2] - card_bounds[1][2])
 
-                fr = mod.find("**/frame")
-                fr.setTextureOff(1)
-                fr.set_transparency(1) # hide the frame
-
-                mod.set_scale(1, scale[0], scale[1])
-                mod.setTwoSided(True)
-                mod.set_texture(tex)
-                mod.setDepthOffset(1)
-               
-                mod.flatten_light()
-                mod.reparent_to(self.dirty_road_patch_node_path)
-
-                mod.set_pos(FIRST_PATCH_DISTANCE + PATCH_DISTANCE * patch_index, 0, 0.5) # TODO: set pos according to settings
-                if self.engine.dirty_road_patch_object is None:
-                    mod.set_hpr(180.0, 0, 0) # mirror texture
-                self._node_path_list.append(mod)
-
-                body_node = BaseGhostBodyNode(dirty_road_patch_id, MetaDriveType.DIRTY_ROAD_PATCH) # this is the physics object (mass, velocity, ...)
-                body_node.setKinematic(False) # no kinematics needed
-                body_node.setStatic(True) # Dynamic bodies are similar to static bodies. Except that dynamic bodies can be moved around the world by applying force or torque
-
-                # # not needed?
-                # # body_np = self.dirty_road_patch_node_path.attachNewNode(body_node)
-                # # A trick allowing collision with sidewalk
-                # # body_np.setPos(0, 0, 1.5)
-                # # self._node_path_list.append(body_np)
-
-                mesh = BulletTriangleMesh()
-                for geomNP in mod.findAllMatches('**/+GeomNode'):
-                    geomNode = geomNP.node()
-                    ts = geomNode.getTransform()
-                    for geom in geomNode.getGeoms():
-                        mesh.addGeom(geom, True, ts)
-
-                shape = BulletTriangleMeshShape(mesh, dynamic=False)
-                body_node.addShape(shape)
-                self.static_nodes.append(body_node)
-                body_node.setIntoCollideMask(CollisionGroup.DirtyRoadPatch)
+                card.setTexture(tex)
+                card.set_pos(FIRST_PATCH_DISTANCE + PATCH_DISTANCE * patch_index, card_width/2, DEFAULT_SENSOR_OFFSET[2]/2) # TODO: set pos according to settings,  # 1.5 = DEFAULT_SENSOR_OFFSET = cam height
+                self._node_path_list.append(card)
 
     def _construct_crosswalk(self):
         """
