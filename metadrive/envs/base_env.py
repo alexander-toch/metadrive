@@ -235,6 +235,7 @@ BASE_DEFAULT_CONFIG = dict(
     place_patch_in_image_stream=False,
     patch_geneneration_iterations=50,
     patch_color_replace=False,
+    lane_detection_model="resa",
 
     # disables the Map cache
     force_map_generation=False,
