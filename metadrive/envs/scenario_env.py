@@ -52,12 +52,13 @@ SCENARIO_ENV_CONFIG = dict(
     static_traffic_object=True,
     show_sidewalk=False,
     enable_dirty_road_patch_attack=False,
-    dirty_road_patch_attack_step_index=None,
+    dirty_road_patch_attack_at_meter=None,
     force_map_generation=False,
     save_probmaps=False,
     patch_size_meters=(1.0, 1.0), # (width, length)
     place_patch_in_image_stream=False,
     patch_geneneration_iterations=50,
+    patch_color_replace=False,
 
     # ===== Agent config =====
     vehicle_config=dict(

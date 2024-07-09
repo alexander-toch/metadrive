@@ -433,8 +433,8 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
             if polygons is None:
                 continue
 
-            PATCH_COUNT = 4
-            FIRST_PATCH_DISTANCE = 20
+            PATCH_COUNT = 1
+            FIRST_PATCH_DISTANCE = self.engine.global_config["dirty_road_patch_attack_at_meter"]
             PATCH_DISTANCE = 50
 
             # for _ in polygons:
@@ -467,8 +467,11 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
                 card_width = np.abs(card_bounds[0][1] - card_bounds[1][1])
                 card_height = np.abs(card_bounds[0][2] - card_bounds[1][2])
 
-                card.setTexture(tex)
-                card.set_pos(FIRST_PATCH_DISTANCE + PATCH_DISTANCE * patch_index, card_width/2, DEFAULT_SENSOR_OFFSET[2]/2) # TODO: set pos according to settings,  # 1.5 = DEFAULT_SENSOR_OFFSET = cam height
+
+                if not self.engine.global_config["patch_color_replace"]:
+                    card.setTexture(tex)
+                
+                card.set_pos(FIRST_PATCH_DISTANCE + PATCH_DISTANCE * patch_index, card_width/2, 0.3) # TODO: set pos according to settings,  # 1.5 = DEFAULT_SENSOR_OFFSET = cam height
                 self._node_path_list.append(card)
 
     def _construct_crosswalk(self):
