@@ -96,6 +96,7 @@ SCENARIO_ENV_CONFIG = dict(
     crash_object_done=False,
     crash_human_done=False,
     relax_out_of_road_done=True,
+    crash_sidewalk_done=False,
 
     # ===== others =====
     allowed_more_steps=None,  # horizon, None=infinite
@@ -148,6 +149,7 @@ class ScenarioEnv(BaseEnv):
             TerminationState.SUCCESS: self._is_arrive_destination(vehicle),
             TerminationState.MAX_STEP: max_step,
             TerminationState.ENV_SEED: self.current_seed,
+            TerminationState.CRASH_SIDEWALK: vehicle.crash_sidewalk,
             # TerminationState.CURRENT_BLOCK: self.agent.navigation.current_road.block_ID(),
             # crash_vehicle=False, crash_object=False, crash_building=False, out_of_road=False, arrive_dest=False,
         }
@@ -187,6 +189,9 @@ class ScenarioEnv(BaseEnv):
             if self.config["truncate_as_terminate"]:
                 done = True
             self.logger.info(msg("max step"), extra={"log_once": True})
+        elif done_info[TerminationState.CRASH_SIDEWALK]:
+            done = True
+            self.logger.info(msg("crash sidewalk"), extra={"log_once": True})
         elif self.config["allowed_more_steps"] and self.episode_lengths[vehicle_id] >= \
                 self.engine.data_manager.current_scenario_length + self.config["allowed_more_steps"]:
             if self.config["truncate_as_terminate"]:
