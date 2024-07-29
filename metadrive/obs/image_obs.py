@@ -19,12 +19,17 @@ class ImageStateObservation(BaseObservation):
     The shape needs special handling
     """
     IMAGE = "image"
+    LANE = "lane"
     STATE = "state"
 
     def __init__(self, config):
         super(ImageStateObservation, self).__init__(config)
         self.img_obs = ImageObservation(config, config["vehicle_config"]["image_source"], config["norm_pixel"])
         self.state_obs = StateObservation(config)
+
+        self.lane_camera_obs = None
+        if "lane_camera" in config["sensors"]:
+            self.lane_camera_obs = ImageObservation(config, "lane_camera", config["norm_pixel"])
 
     @property
     def observation_space(self):
@@ -36,7 +41,10 @@ class ImageStateObservation(BaseObservation):
         )
 
     def observe(self, vehicle: BaseVehicle, new_parent_node=None, position=None, hpr=None):
-        return {self.IMAGE: self.img_obs.observe(new_parent_node=new_parent_node, position=position, hpr=hpr), self.STATE: self.state_obs.observe(vehicle)}
+        lane_obs = self.lane_camera_obs.observe(new_parent_node=new_parent_node, position=position, hpr=hpr) if self.lane_camera_obs else None
+        return {self.IMAGE: self.img_obs.observe(new_parent_node=new_parent_node, position=position, hpr=hpr), 
+                self.STATE: self.state_obs.observe(vehicle),
+                self.LANE: lane_obs}
 
     def destroy(self):
         super(ImageStateObservation, self).destroy()

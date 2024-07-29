@@ -236,6 +236,7 @@ BASE_DEFAULT_CONFIG = dict(
     patch_geneneration_iterations=50,
     patch_color_replace=False,
     lane_detection_model="resa",
+    generate_training_data=False,
     crash_sidewalk_done=False,
     relax_out_of_road_done=True,
 

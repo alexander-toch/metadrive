@@ -218,14 +218,26 @@ class BaseMap(BaseRunnable, ABC):
             elif "lane_line" in layer and (MetaDriveType.is_road_line(obj["type"])
                                            or MetaDriveType.is_road_boundary_line(obj["type"])):
                 if MetaDriveType.is_broken_line(obj["type"]):
-                    for index in range(0, len(obj["polyline"]) - 1, points_to_skip * 2):
+                    d = True
+                    for index in range(0, len(obj["polyline"]) - 1, points_to_skip):
                         if index + points_to_skip < len(obj["polyline"]):
-                            polylines.append(
-                                (
-                                    [obj["polyline"][index], obj["polyline"][index + points_to_skip]],
-                                    MapTerrainSemanticColor.get_color(obj["type"])
+                            if d:
+                                polylines.append(
+                                    (
+                                        [obj["polyline"][index], obj["polyline"][index + points_to_skip]],
+                                        MapTerrainSemanticColor.get_color(obj["type"])
+                                    )
                                 )
-                            )
+                                d = False
+                            else:
+                                if "lane_camera" in self.engine.global_config["sensors"]:
+                                    polylines.append(
+                                        (
+                                            [obj["polyline"][index], obj["polyline"][index + points_to_skip]],
+                                            0.9
+                                        )
+                                    )
+                                d = True
                 else:
                     polylines.append((obj["polyline"], MapTerrainSemanticColor.get_color(obj["type"])))
 

@@ -173,6 +173,7 @@ class BaseVehicle(BaseObject, BaseVehicleState):
         self.last_heading_dir = self.heading
         self.dist_to_left_side = None
         self.dist_to_right_side = None
+        self.dist_to_center = None
         self.last_velocity = 0
         self.last_speed = 0
 
@@ -278,7 +279,7 @@ class BaseVehicle(BaseObject, BaseVehicleState):
         return step_info
 
     def _out_of_route(self):
-        left, right = self._dist_to_route_left_right()
+        left, right, _ = self._dist_to_route_left_right()
         return True if right < 0 or left < 0 else False
 
     def _update_energy_consumption(self):
@@ -511,7 +512,7 @@ class BaseVehicle(BaseObject, BaseVehicleState):
     """---------------------------------------- vehicle info ----------------------------------------------"""
 
     def update_dist_to_left_right(self):
-        self.dist_to_left_side, self.dist_to_right_side = self._dist_to_route_left_right()
+        self.dist_to_left_side, self.dist_to_right_side, self.dist_to_center = self._dist_to_route_left_right()
 
     def _dist_to_route_left_right(self):
         # TODO
@@ -521,7 +522,8 @@ class BaseVehicle(BaseObject, BaseVehicleState):
         _, lateral_to_reference = current_reference_lane.local_coordinates(self.position)
         lateral_to_left = lateral_to_reference + self.navigation.get_current_lane_width() / 2
         lateral_to_right = self.navigation.get_current_lateral_range(self.position, self.engine) - lateral_to_left
-        return lateral_to_left, lateral_to_right
+        lateral_to_center = lateral_to_reference - self.navigation.get_current_lane_width()
+        return lateral_to_left, lateral_to_right, lateral_to_center
 
     # @property
     # def heading_theta(self):

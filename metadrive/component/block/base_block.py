@@ -423,7 +423,7 @@ class BaseBlock(BaseObject, PGDrivableAreaProperty, ABC):
         """
         Construct the dirty road patches
         """       
-        if self.engine.global_config["enable_dirty_road_patch_attack"] is not True:
+        if not self.engine.global_config["enable_dirty_road_patch_attack"] or self.engine.global_config["place_patch_in_image_stream"]:
             return
 
         for dirty_road_patch_id, dirty_road_patch in self.dirty_road_patches.items():

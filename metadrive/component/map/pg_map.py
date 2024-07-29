@@ -149,7 +149,8 @@ class PGMap(BaseMap):
                         ret["{}_{}".format(l.index, side)] = {
                             "type": line_type,
                             "polyline": l.get_polyline(interval, lateral),
-                            "speed_limit_kmh": l.speed_limit
+                            "speed_limit_kmh": l.speed_limit,
+                            "index": l.index
                         }
         return ret
 
