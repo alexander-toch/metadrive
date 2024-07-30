@@ -234,7 +234,7 @@ class BaseMap(BaseRunnable, ABC):
                     polylines.append((obj["polyline"], MapTerrainSemanticColor.get_color(obj["type"])))
 
         size = int(size * pixels_per_meter)
-        mask = np.zeros([size, size, 1], dtype=np.int8)
+        mask = np.zeros([size, size, 1], dtype=np.uint8)
         mask[..., 0] = color_setting.get_color(MetaDriveType.GROUND)
         # create an example bounding box polygon
         # for idx in range(len(polygons)):
@@ -279,9 +279,9 @@ class BaseMap(BaseRunnable, ABC):
                 return max_yellow + 0.01
             else:
                 whites = list(filter(lambda x: x <= MapTerrainSemanticColor.WHITE and x > MapTerrainSemanticColor.WHITE - 0.0999, self.lane_colors.values()))
-                max_white = max(MapTerrainSemanticColor.WHITE - 0.1,
-                                max(whites) if len(whites) > 0 else MapTerrainSemanticColor.WHITE - 0.1)
-                self.lane_colors[index] = max_white + 0.01
+                max_white = max(MapTerrainSemanticColor.WHITE,
+                                max(whites) if len(whites) > 0 else MapTerrainSemanticColor.WHITE)
+                self.lane_colors[index] = max_white + 1
                 return max_white + 0.01
 
     # @time_me

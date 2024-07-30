@@ -522,7 +522,7 @@ class Terrain(BaseObject, ABC):
         for x in range(0, 2048, step_size * 2):
             tex[x:x + step_size, ...] = 220
         self.crosswalk_tex = Texture()
-        self.crosswalk_tex.setup2dTexture(*tex.shape[:2], Texture.TByte, Texture.F_rgb)
+        self.crosswalk_tex.setup2dTexture(*tex.shape[:2], Texture.TUnsignedByte, Texture.F_rgb)
         self.crosswalk_tex.setRamImage(tex)
         # self.crosswalk_tex.write("test_crosswalk.png")
 
