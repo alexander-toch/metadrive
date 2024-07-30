@@ -63,35 +63,32 @@ void main() {
     float r_min = (1-1/elevation_texture_ratio)/2;
     float r_max = (1-1/elevation_texture_ratio)/2+1/elevation_texture_ratio;
     vec4 attri;
-    if (abs(elevation_texture_ratio - 1) < 0.001) {
-        attri = texture(attribute_tex, terrain_uv);
-    }
-    else {
-        attri = texture(attribute_tex, terrain_uv*elevation_texture_ratio+0.5);
-    }
+    attri = texture(attribute_tex, terrain_uv*elevation_texture_ratio+0.5);
 
     // get the color and terrain normal in world space
+    // GROUND = 0.0
+    // WHITE_STRIPE = 0.02
+    // ROAD = 0.2
+    // WHITE = 0.3 # map all semantic colors between 0.21 and 0.29
+    // CROSSWALK = 0.4
+    // YELLOW = 0.9
+
     vec3 diffuse;
-    float alpha = 1.0;
+    float eps = 1.0;
     vec3 black = vec3(0.0, 0.0, 0.0);
-    if ((attri.r > 0.01) && (terrain_uv.x>=r_min) && (terrain_uv.y >= r_min) && (terrain_uv.x<=r_max) && (terrain_uv.y<=r_max)){
-        float value = attri.r;// Assuming it's a red channel texture
-        if (value < 0.11) {
-            // yellow
-            diffuse=lane_line_semantics;
-        } else if (value < 0.21) {
+    if ((attri.r > 0) && (terrain_uv.x>=r_min) && (terrain_uv.y >= r_min) && (terrain_uv.x<=r_max) && (terrain_uv.y<=r_max)){
+        if (abs(attri.r*255 - 1.0) < eps) {
+            // white stripe gaps should be visible
+            diffuse = lane_line_semantics;
+        }  else if (abs(attri.r*255 - 2.0) < eps) {
             // road
             diffuse = black;
-        } else if (value < 0.31) {
+        }  else if (abs(attri.r*255 - 4.0) < eps) {
             // white
             diffuse = lane_line_semantics;
-        } else if (value > 0.89 && value < 0.99) {
-            // lane stripe
-            diffuse = lane_line_semantics;
-        } else if (value > 0.3999 ||  value < 0.760001) {
-            // crosswalk
-            diffuse = black;
-        
+        }  else if (abs(attri.r*255 - 6.0) < eps) {
+            // yellow
+            diffuse=lane_line_semantics;
         } else {
             // Semantics for value 4
             diffuse = black;
@@ -100,5 +97,5 @@ void main() {
         diffuse = black;
     }
 
-    color = vec4(diffuse, alpha);
+    color = vec4(diffuse, 1.0);
 }

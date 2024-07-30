@@ -400,8 +400,12 @@ class MapTerrainSemanticColor:
     Do not modify this as it is for terrain generation. If you want your own palette, just add a new one or modify
     class lMapSemanticColor
     """
-    YELLOW = 0.1
-    WHITE = 0.3
+    GROUND = 0
+    WHITE_STRIPE = 1
+    ROAD = 2
+    WHITE = 4 # map all semantic colors between 0.21 and 0.29
+    CROSSWALK = 5
+    YELLOW = 6
 
     @staticmethod
     def get_color(type):
@@ -421,10 +425,10 @@ class MapTerrainSemanticColor:
             return MapTerrainSemanticColor.YELLOW
         elif MetaDriveType.is_lane(type):
             # return (0, 1, 0, 0)
-            return 0.2
+            return MapTerrainSemanticColor.ROAD
         elif type == MetaDriveType.GROUND:
             # return (0, 0, 1, 0)
-            return 0.0
+            return MapTerrainSemanticColor.GROUND
         elif MetaDriveType.is_white_line(type) or MetaDriveType.is_road_boundary_line(type):
             # return (0, 0, 0, 1)
             return MapTerrainSemanticColor.WHITE
@@ -432,9 +436,7 @@ class MapTerrainSemanticColor:
             # The range of crosswalk value is 0.4 <= value < 0.76,
             # so people can save the angle (degree) of the crosswalk in attribute map
             # the value * 10 = angle of crosswalk. It is a trick for saving memory.
-            return 0.4  # this value can be overwritten latter
-        elif MetaDriveType.DIRTY_ROAD_PATCH:
-            return 0.8
+            return MapTerrainSemanticColor.CROSSWALK  # this value can be overwritten latter
         else:
             raise ValueError("Unsupported type: {}".format(type))
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -83,7 +83,7 @@ class Terrain(BaseObject, ABC):
             # prepare semantic texture
             semantic_size = self._semantic_map_size * self._semantic_map_pixel_per_meter
             self.semantic_tex = Texture()
-            self.semantic_tex.setup2dTexture(semantic_size, semantic_size, Texture.TFloat, Texture.F_red)
+            self.semantic_tex.setup2dTexture(semantic_size, semantic_size, Texture.T_unsigned_byte, Texture.F_red)
             # prepare height field texture
             self.heightfield_tex = Texture()
             self.heightfield_tex.setup2dTexture(*self.heightfield_img.shape[:2], Texture.TShort, Texture.FLuminance)
@@ -522,7 +522,7 @@ class Terrain(BaseObject, ABC):
         for x in range(0, 2048, step_size * 2):
             tex[x:x + step_size, ...] = 220
         self.crosswalk_tex = Texture()
-        self.crosswalk_tex.setup2dTexture(*tex.shape[:2], Texture.TUnsignedByte, Texture.F_rgb)
+        self.crosswalk_tex.setup2dTexture(*tex.shape[:2], Texture.TByte, Texture.F_rgb)
         self.crosswalk_tex.setRamImage(tex)
         # self.crosswalk_tex.write("test_crosswalk.png")
 
