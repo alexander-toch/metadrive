@@ -60,6 +60,7 @@ SCENARIO_ENV_CONFIG = dict(
     patch_geneneration_iterations=50,
     patch_color_replace=False,
     lane_detection_model="resa",
+    custom_model_path=None,
     generate_training_data=False,
 
     # ===== Agent config =====
