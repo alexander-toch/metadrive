@@ -149,11 +149,11 @@ class Terrain(BaseObject, ABC):
 
             if self.render:
                 # Make semantics for shader terrain
-                self.semantic_tex.clearRamImage()
+                self.semantic_tex.clearImage()
                 rrr = self.get_terrain_semantics(center_point)
                 self.semantic_tex.setRamImage(rrr)
                 # Make height field
-                self.heightfield_tex.clearRamImage()
+                self.heightfield_tex.clearImage()
                 self.heightfield_tex.setRamImage(heightfield_base)
                 # generate terrain visualization
                 self._generate_mesh_vis_terrain(self._terrain_size, self.heightfield_tex, self.semantic_tex)

@@ -107,12 +107,12 @@ class BaseMap(BaseRunnable, ABC):
 
     def destroy(self):
         self.detach_from_world()
-        # if self._semantic_map is not None:
-        #     del self._semantic_map
-        #     self._semantic_map = None
-        # if self._height_map is not None:
-        #     del self._height_map
-        #     self._height_map = None
+        if self._semantic_map is not None:
+            del self._semantic_map
+            self._semantic_map = None
+        if self._height_map is not None:
+            del self._height_map
+            self._height_map = None
 
         for block in self.blocks:
             block.destroy()
@@ -256,9 +256,6 @@ class BaseMap(BaseRunnable, ABC):
             thickness = polyline_thickness * 2 if color == MapTerrainSemanticColor.YELLOW else polyline_thickness
             thickness = min(thickness, 2)  # clip
             cv2.polylines(mask, np.array([points]).astype(np.int32), False, color, thickness)
-
-        self._semantic_map = mask
-        return self._semantic_map
         return mask
 
     def get_lane_color(self, lane_obj):
