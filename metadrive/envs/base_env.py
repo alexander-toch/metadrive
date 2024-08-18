@@ -235,6 +235,7 @@ BASE_DEFAULT_CONFIG = dict(
     place_patch_in_image_stream=False,
     patch_geneneration_iterations=50,
     patch_color_replace=False,
+    use_blur_defense=False,
     lane_detection_model="resa",
     custom_model_path=None,
     generate_training_data=False,
